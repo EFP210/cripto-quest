@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cripto Quest · Las 7 Esferas del Parcial</title>
+<style>
+:root{--bg:#0d1020;--panel:#171b33;--panel2:#20264a;--txt:#eef1ff;--muted:#a7aed6;--acc:#ff9a1f;--ok:#2ecc71;--bad:#ff4d5e;--shield:#38d6ff;--r:14px}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;line-height:1.45;-webkit-text-size-adjust:100%}
+body.th-dn{--bg:#07070a;--panel:#131317;--panel2:#1e1e25;--acc:#d3122e;--muted:#b9b4b4}
+body.th-moto{--bg:#121212;--panel:#1d1d1f;--panel2:#2a2a2e;--acc:#ff6a00}
+body.th-apex{--bg:#14090b;--panel:#211215;--panel2:#2f191d;--acc:#ff3b3b}
+body.th-halo{--bg:#061611;--panel:#0d241c;--panel2:#133428;--acc:#7cd36b;--shield:#5fe1ff}
+body.th-dbz{--bg:#10162e;--panel:#1a2347;--panel2:#24305e;--acc:#ff8c1a}
+body.th-boss{--bg:#0f1a0c;--panel:#1a2a14;--panel2:#24391b;--acc:#b6ff3b}
+a{color:var(--acc)}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:.65em 1em;background:var(--panel2);color:var(--txt);transition:transform .08s,filter .15s;touch-action:manipulation}
+button:hover{filter:brightness(1.2)}button:active{transform:scale(.97)}
+button.pri{background:var(--acc);color:#111;font-weight:700}
+button.ghost{background:transparent;border:1px solid var(--muted);color:var(--muted)}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{font:inherit;color:var(--txt);background:#0006;border:1px solid #fff3;border-radius:10px;padding:.6em .75em;width:100%}
+input:focus,textarea:focus{outline:2px solid var(--acc)}
+.wrap{max-width:980px;margin:0 auto;padding:12px 12px 80px}
+header.hud{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#000c,#0008);backdrop-filter:blur(6px);border-bottom:1px solid #ffffff1a}
+.hud .row{max-width:980px;margin:0 auto;padding:8px 12px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.brand{font-weight:800;letter-spacing:.5px;font-size:1.05rem}
+.brand span{color:var(--acc)}
+.stat{display:flex;align-items:center;gap:6px;font-size:.9rem;color:var(--muted)}
+.stat b{color:var(--txt)}
+.balls{display:flex;gap:3px}
+.xpbar{height:6px;width:120px;background:#ffffff1f;border-radius:6px;overflow:hidden}
+.xpbar i{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#ff7b00)}
+.card{background:var(--panel);border:1px solid #ffffff14;border-radius:var(--r);padding:16px;margin:12px 0;box-shadow:0 6px 24px #0005}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.mcard{position:relative;cursor:pointer;overflow:hidden;min-height:170px;display:flex;flex-direction:column;gap:6px}
+.mcard h3{margin:0;font-size:1.08rem}
+.mcard .tag{font-size:.78rem;color:var(--muted)}
+.mcard .big{font-size:2.2rem;line-height:1}
+.mcard.locked{filter:grayscale(1) brightness(.6);cursor:not-allowed}
+.mcard .done{position:absolute;top:10px;right:10px}
+.mcard.dn{background:linear-gradient(135deg,#0a0a0d,#2a0a10)}
+.mcard.moto{background:linear-gradient(135deg,#1c1c1c,#4a2100)}
+.mcard.apex{background:linear-gradient(135deg,#2a0d10,#5a1717)}
+.mcard.halo{background:linear-gradient(135deg,#0b2a20,#14532d)}
+.mcard.dbz{background:linear-gradient(135deg,#1b2a6b,#b85a00)}
+.mcard.boss{background:linear-gradient(135deg,#1d3311,#4c7a12)}
+.pill{display:inline-block;font-size:.75rem;padding:2px 8px;border-radius:99px;background:#ffffff1a;color:var(--muted);margin-right:4px}
+.qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:6px}
+.prompt{font-size:1.05rem}
+.prompt code,.mono,.fb code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0007;padding:1px 6px;border-radius:6px;word-break:break-all}
+.opts{display:grid;gap:8px;margin-top:10px}
+.opts button{text-align:left;background:var(--panel2);border:1px solid #ffffff1a;padding:.8em 1em}
+.opts button.sel-ok{background:#1f6f43;border-color:var(--ok)}
+.opts button.sel-bad{background:#7a1f2a;border-color:var(--bad)}
+.opts button.show-ok{border:2px solid var(--ok)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.fb{margin-top:12px;border-radius:12px;padding:12px 14px;border-left:5px solid}
+.fb.ok{background:#12391f;border-color:var(--ok)}
+.fb.bad{background:#3d1218;border-color:var(--bad)}
+.fb .page{display:inline-block;margin-top:6px;font-size:.85rem;color:#ffe08a}
+.shields{display:flex;gap:4px;align-items:center}
+.shields i{width:22px;height:10px;border-radius:3px;background:var(--shield);box-shadow:0 0 8px var(--shield)}
+.shields i.off{background:#ffffff22;box-shadow:none}
+.shields i.over{background:#ffd23f;box-shadow:0 0 8px #ffd23f}
+.story{border-left:4px solid var(--acc);padding:8px 12px;background:#0004;border-radius:8px;margin:8px 0;font-style:italic}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:99;background:#000d;border:2px solid var(--acc);color:#fff;padding:10px 18px;border-radius:12px;font-weight:800;font-size:1.1rem;animation:pop 1.8s forwards;pointer-events:none;text-align:center;max-width:92vw}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-10px) scale(.8)}12%{opacity:1;transform:translate(-50%,0) scale(1.08)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-14px)}}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.ring{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.ring svg{width:38px;height:38px}
+.ring.danger{color:var(--bad);font-weight:700}
+.board{display:grid;gap:4px;margin:10px auto;width:min(92vw,320px)}
+.board .cell{aspect-ratio:1;border-radius:8px;background:#0007;border:1px solid #ffffff22;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.25rem;font-family:ui-monospace,Menlo,monospace;user-select:none;cursor:pointer;position:relative}
+.board .cell.hole{background:#fff2;border:2px solid var(--acc);box-shadow:inset 0 0 0 3px #0008}
+.board .cell.hole::after{content:"";position:absolute;inset:22%;border-radius:50%;border:2px dashed var(--acc);opacity:.6}
+.board .cell.filled{color:#ffd23f}
+.board .cell.o0{background:#ff6a0040}.board .cell.o1{background:#38d6ff40}.board .cell.o2{background:#2ecc7140}.board .cell.o3{background:#c86bff40}
+.hist{display:flex;align-items:flex-end;gap:2px;height:120px;margin:4px 0 0;padding:0 2px;border-bottom:1px solid #fff4}
+.hist div{flex:1;background:var(--acc);border-radius:3px 3px 0 0;min-height:1px}
+.hist.ref div{background:#38d6ff}
+.hlab{display:flex;gap:2px;font-size:.62rem;color:var(--muted);font-family:ui-monospace,monospace;padding:0 2px}
+.hlab span{flex:1;text-align:center}
+.track{position:relative;height:90px;background:repeating-linear-gradient(90deg,#333 0 30px,#3d3d3d 30px 60px);border-radius:12px;overflow:hidden;border:2px solid #555;margin:10px 0}
+.track .lane{position:absolute;left:0;right:0;top:44px;border-top:3px dashed #ffffffaa}
+.track .flag{position:absolute;right:6px;top:8px;font-size:1.8rem}
+.track .bike{position:absolute;left:0;top:14px;width:86px;transition:left .5s cubic-bezier(.3,1.4,.5,1)}
+.speedo{font-family:ui-monospace,monospace;font-size:1.3rem;color:#ffd23f}
+.subgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;margin:8px 0}
+.subgrid label{display:flex;flex-direction:column;align-items:center;font-family:ui-monospace,monospace;font-size:.8rem;color:var(--muted);background:#0005;border-radius:8px;padding:4px}
+.subgrid input{text-align:center;padding:.3em;font-weight:800;text-transform:uppercase}
+.subgrid label.good{outline:2px solid var(--ok)}
+.ctext{font-family:ui-monospace,Menlo,monospace;background:#0007;padding:10px;border-radius:10px;word-break:break-word;letter-spacing:1px;line-height:1.7}
+table.eea{border-collapse:collapse;width:100%;font-family:ui-monospace,monospace;font-size:.95rem}
+table.eea th,table.eea td{border:1px solid #ffffff22;padding:4px;text-align:center}
+table.eea input{width:64px;padding:.3em;text-align:center}
+.tablewrap{overflow-x:auto}
+.steps label{display:block;margin:10px 0 4px;font-weight:600}
+.ok-t{color:var(--ok)}.bad-t{color:var(--bad)}
+.modal{position:fixed;inset:0;background:#000b;z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 10px}
+.modal .card{max-width:820px;width:100%;background:#fbf8ef;color:#1d1d1d}
+.modal .card h2,.modal .card h3{color:#7a2d00}
+.modal .card code{background:#0001;color:#222}.modal .card a{color:#a33a00}
+.ficha ul{padding-left:1.2em}.ficha li{margin:3px 0}
+.center{text-align:center}
+.end-ball{animation:spin 2.4s ease-out}
+@keyframes spin{from{transform:scale(.2) rotate(-540deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.shenlong{font-size:6rem;filter:drop-shadow(0 0 30px #7dff6b);animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px)}}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.dn-note{font-family:Georgia,"Times New Roman",serif}
+.th-dn .card{border-color:#d3122e33}
+.scouter{display:inline-flex;align-items:center;gap:6px;background:#0f3d1c;color:#7dff6b;border:1px solid #2ecc71;padding:2px 8px;border-radius:8px;font-family:ui-monospace,monospace;font-size:.85rem}
+.lootbar{font-size:.9rem}
+@media (max-width:600px){
+ .wrap{padding:8px 8px 80px}.card{padding:12px}.prompt{font-size:1rem}
+ header.hud{position:static}.hud .row{gap:6px 10px}.xpbar{width:70px}.brand{font-size:.95rem}
+ .board .cell{font-size:1.05rem}
+}
+@media print{header.hud,.actions,button{display:none!important}.modal{position:static;background:none}}
+</style>
+</head>
+<body>
+<header class="hud"><div class="row" id="hud"></div></header>
+<main class="wrap" id="app"></main>
+<div id="modal-root"></div>
+<script>
+"use strict";
+/* ======================= NÚCLEO CRIPTOGRÁFICO ======================= */
+const AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const rnd = n => Math.floor(Math.random() * n);
+const rint = (a, b) => a + rnd(b - a + 1);
+const pick = a => a[rnd(a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const norm = s => String(s == null ? "" : s).toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Z0-9]/g, "");
+const onlyLetters = s => norm(s).replace(/[0-9]/g, "");
+const mod = (a, m) => ((a % m) + m) % m;
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; };
+const L2N = c => AZ.indexOf(c);
+const N2L = n => AZ[mod(n, 26)];
+function groupN(s, k) { const out = []; for (let i = 0; i < s.length; i += k) out.push(s.slice(i, i + k)); return out.join(" "); }
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const Crypto = {
+  caesar(t, k) { return onlyLetters(t).split("").map(c => N2L(L2N(c) + k)).join(""); },
+  vigenere(t, key, sign = 1) { t = onlyLetters(t); key = onlyLetters(key); return t.split("").map((c, i) => N2L(L2N(c) + sign * L2N(key[i % key.length]))).join(""); },
+  xorBits(a, b) { return a.split("").map((x, i) => (x === b[i] ? "0" : "1")).join(""); },
+  bits8(ch) { return ch.charCodeAt(0).toString(2).padStart(8, "0"); },
+  // EEA recursivo, igual al pseudocódigo de P2 pág. 28
+  eea(a, b) { if (b === 0) return [a, 1, 0]; const [d, x, y] = Crypto.eea(b, a % b); return [d, y, x - Math.floor(a / b) * y]; },
+  // Filas de la tabla como en P2 pág. 29: a, b, q, d, x, y
+  eeaRows(a, b) {
+    const rows = [];
+    while (true) { rows.push({ a, b, q: b === 0 ? null : Math.floor(a / b) }); if (b === 0) break; [a, b] = [b, a % b]; }
+    const d = rows[rows.length - 1].a;
+    let x = 1, y = 0;
+    for (let i = rows.length - 1; i >= 0; i--) {
+      if (i === rows.length - 1) { rows[i].x = 1; rows[i].y = 0; }
+      else { const nx = rows[i + 1].y, ny = rows[i + 1].x - rows[i].q * rows[i + 1].y; rows[i].x = nx; rows[i].y = ny; }
+      rows[i].d = d;
+    }
+    return rows;
+  },
+  inv(a, m) { a = mod(a, m); if (gcd(a, m) !== 1) return null; const [, , y] = Crypto.eea(m, a); return mod(y, m); },
+  // Hill con la convención de las diapositivas (P2 pág. 23): c = m·K (vector fila)
+  hillMul(v, K, m = 26) { return [mod(v[0] * K[0][0] + v[1] * K[1][0], m), mod(v[0] * K[0][1] + v[1] * K[1][1], m)]; },
+  hillEnc(t, K) { t = onlyLetters(t); if (t.length % 2) t += "X"; let o = ""; for (let i = 0; i < t.length; i += 2) o += Crypto.hillMul([L2N(t[i]), L2N(t[i + 1])], K).map(N2L).join(""); return o; },
+  det2(K, m = 26) { return mod(K[0][0] * K[1][1] - K[0][1] * K[1][0], m); },
+  hillInv(K, m = 26) { const d = Crypto.det2(K, m), di = Crypto.inv(d, m); if (di === null) return null; return [[mod(di * K[1][1], m), mod(-di * K[0][1], m)], [mod(-di * K[1][0], m), mod(di * K[0][0], m)]]; },
+  // Playfair (P2 págs. 11-12). I y J comparten casilla.
+  pfSquare(key) { const AL = "ABCDEFGHIKLMNOPQRSTUVWXYZ"; let s = ""; for (const c of onlyLetters(key).replace(/J/g, "I") + AL) if (!s.includes(c)) s += c; return [0, 1, 2, 3, 4].map(i => s.slice(i * 5, i * 5 + 5)); },
+  pfPrep(t) { t = onlyLetters(t).replace(/J/g, "I"); const p = []; let i = 0; while (i < t.length) { const a = t[i]; const fill = a === "X" ? "Q" : "X"; if (i + 1 < t.length && t[i + 1] !== a) { p.push(a + t[i + 1]); i += 2; } else { p.push(a + fill); i += 1; } } return p; },
+  pfPos(sq, c) { c = c === "J" ? "I" : c; for (let r = 0; r < 5; r++) { const k = sq[r].indexOf(c); if (k >= 0) return [r, k]; } return null; },
+  pfCrypt(sq, pairs, d) {
+    return pairs.map(([a, b]) => { const [r1, c1] = Crypto.pfPos(sq, a), [r2, c2] = Crypto.pfPos(sq, b);
+      if (r1 === r2) return sq[r1][mod(c1 + d, 5)] + sq[r2][mod(c2 + d, 5)];
+      if (c1 === c2) return sq[mod(r1 + d, 5)][c1] + sq[mod(r2 + d, 5)][c2];
+      return sq[r1][c2] + sq[r2][c1]; });
+  },
+  pfEnc(sq, t) { return Crypto.pfCrypt(sq, Crypto.pfPrep(t), 1); },
+  pfDec(sq, t) { t = onlyLetters(t); const p = []; for (let i = 0; i < t.length; i += 2) p.push(t.slice(i, i + 2)); return Crypto.pfCrypt(sq, p, -1); },
+  // Rejilla giratoria: misma lógica que grille.py de Edwin. dir 1 = horario, 0 = antihorario (el de la clase)
+  rot(holes, n, dir) { return holes.map(([f, c]) => (dir === 1 ? [c, n - 1 - f] : [n - 1 - c, f])); },
+  grilleSteps(holes, n, dir) { const steps = []; let cur = holes.map(h => h.slice()); for (let k = 0; k < 4; k++) { steps.push(cur.slice().sort((p, q) => p[0] - q[0] || p[1] - q[1])); cur = Crypto.rot(cur, n, dir); } return steps; },
+  grilleValid(holes, n) { if (holes.length !== n * n / 4) return false; const seen = new Set(); for (const st of Crypto.grilleSteps(holes, n, 0)) for (const [f, c] of st) { const k = f * n + c; if (seen.has(k)) return false; seen.add(k); } return seen.size === n * n; },
+  grilleEnc(t, holes, n, dir) { t = onlyLetters(t); while (t.length < n * n) t += "X"; const g = Array(n * n).fill(""); let i = 0; for (const st of Crypto.grilleSteps(holes, n, dir)) for (const [f, c] of st) g[f * n + c] = t[i++]; return g.join(""); },
+  grilleDec(t, holes, n, dir) { t = onlyLetters(t); let o = ""; for (const st of Crypto.grilleSteps(holes, n, dir)) for (const [f, c] of st) o += t[f * n + c]; return o; },
+  grilleRandom(n = 4) { const h = []; const m = n / 2; for (let r = 0; r < m; r++) for (let c = 0; c < m; c++) { let cell = [r, c]; const k = rnd(4); for (let j = 0; j < k; j++) cell = Crypto.rot([cell], n, 1)[0]; h.push(cell); } return h.sort((p, q) => p[0] - q[0] || p[1] - q[1]); },
+  orbitOf(f, c, n) { let best = [f, c]; let cur = [f, c]; for (let j = 0; j < 4; j++) { cur = Crypto.rot([cur], n, 1)[0]; if (cur[0] < n / 2 && cur[1] < n / 2) best = cur; } return best[0] * (n / 2) + best[1]; },
+  // Homofónico: layout de P2 pág. 36 (100 símbolos 0-99)
+  HOMO: { A: [9, 12, 33, 47, 53, 67, 78, 92], B: [48, 81], C: [13, 41, 62], D: [1, 3, 45, 79], E: [14, 16, 24, 44, 46, 55, 57, 64, 74, 82, 87, 98], F: [10, 31], G: [6, 25], H: [23, 39, 50, 56, 65, 68], I: [32, 70, 73, 83, 88, 93], J: [15], K: [4], L: [26, 37, 51, 84], M: [22, 27], N: [18, 58, 59, 66, 71, 91], O: [0, 5, 7, 54, 72, 90, 99], P: [38, 95], Q: [94], R: [29, 35, 40, 42, 77, 80], S: [11, 19, 36, 76, 86, 96], T: [17, 20, 30, 43, 49, 69, 75, 85, 97], U: [8, 61, 63], V: [34], W: [60, 89], X: [28], Y: [21, 52], Z: [2] },
+  homoEnc(t) { return onlyLetters(t).split("").map(c => pick(Crypto.HOMO[c])); },
+  homoDec(nums) { const inv = {}; for (const k in Crypto.HOMO) for (const v of Crypto.HOMO[k]) inv[v] = k; return nums.map(n => inv[n] || "?").join(""); },
+  homoCheck(word, nums) { word = onlyLetters(word); return nums.length === word.length && nums.every((n, i) => Crypto.HOMO[word[i]].includes(n)); },
+  // Hayhanen: tablero de la pág. 48 (clave 'oriental')
+  HAY_TOP: "3964085172", HAY_R1: "oriental", HAY_R7: "bcdfghjkmp", HAY_R2: "qsuvwxyz/.",
+  hayMap() { const m = {}; const T = Crypto.HAY_TOP; [...Crypto.HAY_R1].forEach((c, i) => m[c] = T[i]); [...Crypto.HAY_R7].forEach((c, i) => m[c] = "7" + T[i]); [...Crypto.HAY_R2].forEach((c, i) => m[c] = "2" + T[i]); return m; },
+  hayEnc(t) { const m = Crypto.hayMap(); return [...t.toLowerCase()].filter(c => m[c] || c === "4").map(c => (c === "4" ? "444" : m[c])).join(""); },
+  hayDec(d) { const m = Crypto.hayMap(); const inv = {}; for (const k in m) inv[m[k]] = k; let o = "", i = 0; while (i < d.length) { if (d[i] === "7" || d[i] === "2") { o += inv[d.slice(i, i + 2)]; i += 2; } else { o += inv[d[i]]; i++; } } return o; },
+  // S-box de la pág. 45: permutación (4,8,1,7,3,5,6,2) entre el decodificador 3:8 y el codificador 8:3
+  SBOX: [4, 8, 1, 7, 3, 5, 6, 2].map(x => x - 1),
+  sbox(bits3) { return Crypto.SBOX[parseInt(bits3, 2)].toString(2).padStart(3, "0"); },
+  pbox(bits, P) { return P.map(p => bits[p - 1]).join(""); },
+  colTrans(digits, header) { const w = header.length; let o = ""; for (let k = 1; k <= w; k++) { const j = header.indexOf(k); for (let i = j; i < digits.length; i += w) o += digits[i]; } return o; },
+  ic(counts) { let N = 0, s = 0; for (const n of counts) { N += n; s += n * (n - 1); } return s / (N * (N - 1)); },
+};
+
+/* ======================= DATOS TEMÁTICOS ======================= */
+const WORDS = ["KAMEHAMEHA", "SHENLONG", "CORTANA", "SPARTAN", "RYUK", "KIRA", "GOKU", "VEGETA", "PICCOLO", "CUADERNO", "MANZANA", "CASCO", "PISTON", "MOTOR", "EMBRAGUE", "LLANTA", "ESCUDO", "ANILLO", "LEYENDA", "BOGOTA", "LLAVE", "CIFRADO", "SECRETO", "MENSAJE", "ESFERA", "DRAGON", "TORNEO", "SAIYAJIN", "COVENANT", "WRAITH", "BLOODHOUND", "PATHFINDER", "PARCIAL", "TOCANCIPA", "KAWASAKI", "DUCATI", "YAMAHA", "SUZUKI", "GOHAN", "FREEZER", "MISA", "SHINIGAMI", "WARTHOG", "ARBITER"];
+const WORDS4 = ["GOKU", "KIRA", "RYUK", "HALO", "MOTO", "MISA", "CELL", "BUBU", "CHIEF", "LUZ", "APEX", "DUKE", "KTMS", "BMWS", "ROJO", "GEAR", "NOTE", "SAGA", "ORBE", "AURA"].filter(w => w.length === 4);
+const VKEYS = ["LUZ", "KIRA", "GOKU", "MOTO", "HALO", "APEX", "CHIEF", "SAIYA", "RYUK", "LEGEND", "NEQUI", "UNAL"];
+const PFKEYS = ["MONARCHY", "CORTANA", "DRAGON", "KAWASAKI", "DEATHNOTE", "LEYENDA", "SPARTAN", "SHINIGAMI"];
+const GRILLE_MSGS = ["ELANILLOSECIERRA", "MASTERCHIEFVIVEX", "KIRAESCRIBENOMBR", "GOKUENTRENAHOYXX", "LAMOTOVAAMILXXXX", "RYUKQUIEREMANZAN", "LSABEQUIENESKIRA", "SALTAALANILLOYAX"];
+const HAY_WORDS = ["kira", "goku", "moto", "halo", "cortana", "parcial", "llave", "cifrado", "dragon", "anillo", "ryuk", "secreto", "manzana", "vegeta"];
+const ES_FREQ = { A: 12.53, B: 1.42, C: 4.68, D: 5.86, E: 13.68, F: 0.69, G: 1.01, H: 0.70, I: 6.25, J: 0.44, K: 0.02, L: 4.97, M: 3.15, N: 6.71, O: 8.68, P: 2.51, Q: 0.88, R: 6.87, S: 7.98, T: 4.63, U: 3.93, V: 0.90, W: 0.01, X: 0.22, Y: 0.90, Z: 0.52 };
+const ES_TEXTS = [
+  "EL PILOTO ENCENDIO LA MOTO AL AMANECER Y SALIO HACIA LA CARRETERA DE LA SABANA CON EL CASCO PUESTO Y LOS GUANTES LISTOS PARA LA CURVA MAS RAPIDA DEL CIRCUITO DONDE TODOS LOS DEMAS FRENAN",
+  "GOKU Y VEGETA ENTRARON A LA HABITACION DEL TIEMPO PARA ENTRENAR DURANTE UN DIA QUE AFUERA ES SOLO UNA HORA Y SALIERON CON UN PODER TAN GRANDE QUE EL RASTREADOR DE NADIE LO PODIA MEDIR",
+  "L SABIA QUE KIRA ESCRIBIA LOS NOMBRES EN UN CUADERNO NEGRO Y QUE LA UNICA FORMA DE ATRAPARLO ERA ENCONTRAR UN ERROR EN SUS MENSAJES PORQUE TODO CRIMINAL DEJA UNA PISTA CUANDO SE CONFIA",
+  "EN LA PARTIDA DE ANOCHE MI ESCUADRON CAYO EN EL CENTRO DEL MAPA RECOGIMOS ESCUDOS Y ARMAS Y CORRIMOS ANTES DE QUE EL ANILLO NOS ALCANZARA PARA LLEGAR A LA PELEA FINAL CON VIDA",
+  "LA MEJOR MANERA DE PREPARAR EL PARCIAL ES ESTUDIAR UN POCO CADA DIA HACER LOS EJERCICIOS A MANO Y REVISAR LOS ERRORES CON CALMA PORQUE ASI LAS FORMULAS SE QUEDAN EN LA MEMORIA"
+];
+/* ======================= CONSTRUCTORES DE PREGUNTAS ======================= */
+const chkText = answers => input => { const n = norm(input); return n !== "" && answers.some(a => norm(a) === n); };
+const nums = s => (String(s).match(/-?\d+/g) || []).map(Number);
+const chkNums = (exp, m) => input => { const v = nums(input); return v.length === exp.length && v.every((x, i) => (m ? mod(x, m) === mod(exp[i], m) : x === exp[i])); };
+const chkNum = (val, tol = 0) => input => { const s = String(input).replace(",", ".").match(/-?\d+(\.\d+)?/); if (!s) return false; return Math.abs(parseFloat(s[0]) - val) <= tol + 1e-9; };
+function MC(prompt, options, correct, explain, page, extra = {}) { return Object.assign({ type: "mc", prompt, options, correct, explain, page }, extra); }
+function IN(prompt, answers, explain, page, extra = {}) {
+  const arr = Array.isArray(answers) ? answers : [answers];
+  return Object.assign({ type: "input", prompt, check: chkText(arr), solution: arr[0], answer: arr[0], explain, page }, extra);
+}
+function NUMS(prompt, exp, m, explain, page, extra = {}) { return Object.assign({ type: "input", prompt, check: chkNums(exp, m), solution: exp.join(" "), answer: exp.join(" "), explain, page }, extra); }
+function STEPS(prompt, steps, explain, page, extra = {}) { return Object.assign({ type: "steps", prompt, steps, explain, page }, extra); }
+const pg = (part, p) => `Diapositivas Parte ${part}, pág. ${p}`;
+const COMP = "Complemento (no aparece con nombre en las diapositivas)";
+const sqHTML = sq => `<div class="ctext" style="display:inline-block">${sq.map(r => r.split("").map(c => (c === "I" ? "I/J" : c).padEnd(3, "\u00a0")).join(" ")).join("<br>")}</div>`;
+const M2 = K => `[[${K[0][0]}, ${K[0][1]}], [${K[1][0]}, ${K[1][1]}]]`;
+
+/* ======================= GENERADORES ALEATORIOS ======================= */
+const G = {
+  caesarDec() { const w = pick(WORDS), k = rint(1, 25), c = Crypto.caesar(w, k);
+    return IN(`🏍️ Descifra con César: <code>${c}</code> (llave k = ${k}).`, [w], `D<sub>k</sub>(y) = (y − k) mod 26. Cada letra retrocede ${k} posiciones: ${c} → <b>${w}</b>.`, pg(2, 13), { calc: 1, hint: `Resta ${k} a cada letra; si da negativo, suma 26.` }); },
+  caesarEnc() { const w = pick(WORDS), k = rint(1, 25), c = Crypto.caesar(w, k);
+    return IN(`🏍️ Cifra con César la palabra <code>${w}</code> usando k = ${k}.`, [c], `E<sub>k</sub>(x) = (x + k) mod 26: ${w} → <b>${c}</b>.`, pg(2, 13), { calc: 1, hint: `Ejemplo: A=0 … Z=25. La primera letra ${w[0]}=${L2N(w[0])} → ${mod(L2N(w[0]) + k, 26)} = ${N2L(L2N(w[0]) + k)}.` }); },
+  caesarBrute() { const w = pick(WORDS), k = rint(1, 25), c = Crypto.caesar(w, k);
+    return Object.assign(IN(`🔎 Fuerza bruta: el texto <code>${c}</code> es una palabra de este juego (anime, motos o videojuegos) cifrada con César. ¿Cuál es la llave k (1–25)?`, [String(k)], `Probando las 25 llaves, con k = ${k} sale <b>${w}</b>. César solo tiene 25 llaves útiles; por eso se rompe por fuerza bruta.`, pg(2, 13), { calc: 1, hint: `La palabra es ${w.length} letras y empieza por ${w[0]}.` }), { check: inp => { const v = nums(inp); return v.length === 1 && Crypto.caesar(c, -v[0]) === w; } }); },
+  rot13() { const w = pick(WORDS), c = Crypto.caesar(w, 13);
+    return IN(`Aplica ROT13 a <code>${c}</code>.`, [w], `ROT13 corre 13 posiciones. Como 13 + 13 = 26, aplicarlo dos veces devuelve el original: cifrar y descifrar es lo mismo. Resultado: <b>${w}</b>.`, pg(2, 15), { calc: 1 }); },
+  otpEnc() { const w = pick(WORDS.filter(x => x.length <= 7)), key = Array.from({ length: w.length }, () => AZ[rnd(26)]).join(""), c = Crypto.vigenere(w, key);
+    return IN(`📓 OTP mod 26: cifra <code>${w}</code> con la llave <code>${key}</code> (A=0 … Z=25).`, [c], `C = (P + K) mod 26 letra por letra: ${w.split("").map((p, i) => `${p}(${L2N(p)})+${key[i]}(${L2N(key[i])})=${c[i]}`).join(", ")} → <b>${c}</b>.`, pg(1, 16), { calc: 1, hint: "Suma los valores y reduce mod 26 (si pasa de 25, resta 26)." }); },
+  otpDec() { const w = pick(WORDS.filter(x => x.length <= 7)), key = Array.from({ length: w.length }, () => AZ[rnd(26)]).join(""), c = Crypto.vigenere(w, key);
+    return IN(`📓 OTP mod 26: descifra <code>${c}</code> con la llave <code>${key}</code>.`, [w], `P = (C − K) mod 26: ${c.split("").map((x, i) => `${x}(${L2N(x)})−${key[i]}(${L2N(key[i])})=${w[i]}`).join(", ")} → <b>${w}</b>. Error típico: olvidar sumar 26 cuando la resta es negativa.`, pg(1, 16), { calc: 1 }); },
+  xor() { const p = Array.from({ length: 8 }, () => rnd(2)).join(""), k = Array.from({ length: 8 }, () => rnd(2)).join(""), c = Crypto.xorBits(p, k);
+    return IN(`⊕ OTP binario: P = <code>${p}</code>, K = <code>${k}</code>. ¿Cuánto es C = P ⊕ K? (8 bits)`, [c], `XOR bit a bit (0⊕0=0, 0⊕1=1, 1⊕0=1, 1⊕1=0; es la suma mod 2): <b>${c}</b>. Para descifrar se vuelve a hacer C ⊕ K = P.`, pg(1, 14), { calc: 1 }); },
+  xorAscii() { const ch = pick("FUNKIRALGHOS".split("")), p = Crypto.bits8(ch), k = Array.from({ length: 8 }, () => rnd(2)).join(""), c = Crypto.xorBits(p, k);
+    return IN(`Como en el ejemplo "FUN" de la diapositiva, la letra <b>${ch}</b> en ASCII es <code>${p}</code>. Cífrala con la llave <code>${k}</code>.`, [c], `${p} ⊕ ${k} = <b>${c}</b>.`, pg(1, 15), { calc: 1 }); },
+  xorReuse() { const p1 = Array.from({ length: 8 }, () => rnd(2)).join(""), p2 = Array.from({ length: 8 }, () => rnd(2)).join(""), k = Array.from({ length: 8 }, () => rnd(2)).join(""), c1 = Crypto.xorBits(p1, k), c2 = Crypto.xorBits(p2, k), x = Crypto.xorBits(c1, c2);
+    return IN(`🕵️ Kira reutilizó la llave. L intercepta C1 = <code>${c1}</code> y C2 = <code>${c2}</code>. Sin conocer la llave, ¿qué obtiene L al calcular C1 ⊕ C2?`, [x], `C1 ⊕ C2 = (P1⊕K) ⊕ (P2⊕K) = P1 ⊕ P2 = <b>${x}</b>. La llave se cancela (K⊕K = 0) y L obtiene información de los dos mensajes: por eso la llave del OTP no se puede reutilizar.`, `${pg(1, 13)} y 17 (la llave solo se usa una vez). La identidad C1⊕C2 = P1⊕P2 es un complemento.`, { calc: 1 }); },
+  vigEnc() { const w = pick(WORDS), key = pick(VKEYS), c = Crypto.vigenere(w, key);
+    return IN(`🎯 Vigenère: cifra <code>${w}</code> con la palabra clave <code>${key}</code>.`, [c], `C<sub>i</sub> = (P<sub>i</sub> + K<sub>i mod m</sub>) mod 26. Llave repetida: ${key.repeat(5).slice(0, w.length)} → <b>${c}</b>.`, pg(2, 20), { calc: 1, hint: `Escribe la llave repetida debajo: ${key.repeat(5).slice(0, w.length)}.` }); },
+  vigDec() { const w = pick(WORDS), key = pick(VKEYS), c = Crypto.vigenere(w, key);
+    return IN(`🎯 Vigenère: descifra <code>${c}</code> con la clave <code>${key}</code>.`, [w], `P<sub>i</sub> = (C<sub>i</sub> − K<sub>i mod m</sub>) mod 26. Llave alineada: ${key.repeat(5).slice(0, w.length)} → <b>${w}</b>.`, pg(2, 20), { calc: 1 }); },
+  vigKeyLetter() { const p = AZ[rnd(26)], k = AZ[rnd(26)], c = N2L(L2N(p) + L2N(k));
+    return IN(`En una columna de Vigenère sabes que la letra clara <b>${p}</b> se cifró como <b>${c}</b>. ¿Qué letra de la llave se usó?`, [k], `K = (C − P) mod 26 = (${L2N(c)} − ${L2N(p)}) mod 26 = ${L2N(k)} → <b>${k}</b>. Cada columna de Vigenère es un César; así se recupera la llave letra por letra.`, pg(2, 20), { calc: 1 }); },
+  kasiski() { let m, a; do { m = rint(3, 7); a = [rint(2, 9), rint(2, 9), rint(2, 9)]; } while (gcd(gcd(a[0], a[1]), a[2]) !== 1 || new Set(a).size < 3); const d = a.map(x => x * m);
+    return IN(`🔁 Kasiski: en un criptograma Vigenère el trigrama <code>${pick(["KQX", "VHT", "ZMP", "RRA"])}</code> se repite a distancias de <b>${d.join(", ")}</b> letras. ¿Cuál es la longitud más probable de la llave?`, [String(m)], `Se toma el MCD de las distancias: mcd(${d.join(", ")}) = <b>${m}</b>. Luego se parte el texto en ${m} columnas y cada una se rompe como un César por frecuencias.`, `${COMP}. La pág. 20 (Parte 2) menciona el método prusiano de 1863 para hallar la longitud de la llave: es el método de Kasiski.`, { calc: 1, hint: "MCD de todas las distancias." }); },
+  ic() { const N0 = rint(3, 5); const counts = Array.from({ length: N0 }, () => rint(1, 5)); const letters = shuffle(AZ.split("")).slice(0, N0); const N = counts.reduce((s, x) => s + x, 0); const v = Crypto.ic(counts);
+    return Object.assign(IN(`📈 Índice de coincidencia: un texto de N = ${N} letras tiene estas frecuencias: ${letters.map((l, i) => `${l}=${counts[i]}`).join(", ")}. Calcula IC = Σ n<sub>i</sub>(n<sub>i</sub>−1) / (N(N−1)) con 3 decimales.`, [v.toFixed(3)], `Σ n(n−1) = ${counts.map(n => `${n}·${n - 1}`).join(" + ")} = ${counts.reduce((s, n) => s + n * (n - 1), 0)}; N(N−1) = ${N}·${N - 1} = ${N * (N - 1)}. IC = <b>${v.toFixed(3)}</b>. Referencias: texto aleatorio ≈ 0,038; inglés ≈ 0,065; español ≈ 0,077. Un IC alto indica mono, uno bajo indica poli.`, `${COMP}. Se relaciona con la idea de la pág. 18 (Parte 2): los polialfabéticos aplanan las frecuencias.`, { calc: 1 }), { check: chkNum(v, 0.0015) }); },
+  inv26() { const u = pick([3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25]), v = Crypto.inv(u, 26); const rows = Crypto.eeaRows(26, u);
+    return IN(`🛰️ Cortana necesita el inverso de <b>${u}</b> mod 26. ¿Cuánto es ${u}⁻¹ mod 26?`, [String(v)], `Con el EEA: EEA(26, ${u}) = (1, ${rows[0].x}, ${rows[0].y}), es decir 26·(${rows[0].x}) + ${u}·(${rows[0].y}) = 1. Entonces ${u}⁻¹ ≡ ${rows[0].y} ≡ <b>${v}</b> (mod 26). Comprobación: ${u}·${v} = ${u * v} = ${Math.floor(u * v / 26)}·26 + 1.`, pg(2, 30), { calc: 1, hint: "Busca x tal que " + u + "·x deje residuo 1 al dividir entre 26." }); },
+  hasInv() { const a = rint(2, 25), ok = gcd(a, 26) === 1;
+    return MC(`¿El número <b>${a}</b> tiene inverso multiplicativo módulo 26?`, ["Sí", "No"], ok ? 0 : 1, `mcd(${a}, 26) = ${gcd(a, 26)}. ${ok ? "Como es 1, sí existe el inverso: " + a + "⁻¹ = " + Crypto.inv(a, 26) + "." : "Como no es 1, no existe inverso. Por eso una llave de Hill con det par o múltiplo de 13 no sirve."}`, pg(2, 27), { calc: 1 }); },
+  hillKey() { let K; do { K = [[rnd(26), rnd(26)], [rnd(26), rnd(26)]]; } while (gcd(Crypto.det2(K), 26) !== 1 || Crypto.det2(K) === 1 && rnd(2)); return K; },
+  hillEnc() { const K = G.hillKey(), w = pick(WORDS4), c = Crypto.hillEnc(w, K);
+    const b = [L2N(w[0]), L2N(w[1])], b2 = [L2N(w[2]), L2N(w[3])];
+    return IN(`👾 Transmisión UNSC: cifra <code>${w}</code> con Hill, K = <code>${M2(K)}</code>. Usa la convención de la diapositiva: (c₁, c₂) = (m₁, m₂)·K mod 26.`, [c], `Bloques ${w.slice(0, 2)} = (${b}) y ${w.slice(2)} = (${b2}). (${b})·K = (${b[0]}·${K[0][0]}+${b[1]}·${K[1][0]}, ${b[0]}·${K[0][1]}+${b[1]}·${K[1][1]}) mod 26 = (${Crypto.hillMul(b, K)}); (${b2})·K = (${Crypto.hillMul(b2, K)}). Resultado: <b>${c}</b>.`, pg(2, 25), { calc: 1, hint: "c₁ = m₁·K₁₁ + m₂·K₂₁ y c₂ = m₁·K₁₂ + m₂·K₂₂ (el vector fila multiplica por la izquierda)." }); },
+  hillSteps() { const K = G.hillKey(), d = Crypto.det2(K), di = Crypto.inv(d, 26), Ki = Crypto.hillInv(K), w = pick(WORDS4).slice(0, 2), m = [L2N(w[0]), L2N(w[1])], c = Crypto.hillMul(m, K), cw = c.map(N2L).join("");
+    const adj = [[mod(K[1][1], 26), mod(-K[0][1], 26)], [mod(-K[1][0], 26), mod(K[0][0], 26)]];
+    return STEPS(`🛡️ El Covenant cifró el bloque <code>${cw}</code> con Hill, K = <code>${M2(K)}</code>. Cortana te guía paso a paso (todo mod 26):`, [
+      { label: "1) det(K) mod 26", check: chkNums([d], 26), solution: String(d) },
+      { label: "2) det⁻¹ mod 26 (con el EEA)", check: chkNums([di], 26), solution: String(di) },
+      { label: "3) Adj(K) = [[d, −b], [−c, a]] reducida mod 26 (4 números por filas)", check: chkNums(adj.flat(), 26), solution: adj.flat().join(" ") },
+      { label: "4) K⁻¹ = det⁻¹·Adj(K) mod 26 (4 números por filas)", check: chkNums(Ki.flat(), 26), solution: Ki.flat().join(" ") },
+      { label: `5) Texto claro: m = c·K⁻¹ para c = ${cw}`, check: chkText([w]), solution: w },
+    ], `det = ${K[0][0]}·${K[1][1]} − ${K[0][1]}·${K[1][0]} = ${K[0][0] * K[1][1] - K[0][1] * K[1][0]} ≡ ${d}; det⁻¹ = ${di} (porque ${d}·${di} = ${d * di} ≡ 1); Adj = ${M2(adj)}; K⁻¹ = ${M2(Ki)}. (${c})·K⁻¹ = (${Crypto.hillMul(c, Ki)}) = <b>${w}</b>.`, `${pg(2, 27)} (inversa 2×2) y pág. 31 (ejemplo con det = 53)`, { calc: 1 }); },
+  cofactor() { const M = Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => rnd(10))); const [[a, b, c], [dd, e, f], [g, h, i]] = M;
+    const opts = [["A", e * i - f * h, "+det[[e,f],[h,i]]"], ["B", -(dd * i - f * g), "−det[[d,f],[g,i]]"], ["C", dd * h - e * g, "+det[[d,e],[g,h]]"], ["D", -(b * i - c * h), "−det[[b,c],[h,i]]"], ["E", a * i - c * g, "+det[[a,c],[g,i]]"]];
+    const [nm, val, form] = pick(opts);
+    return NUMS(`🧮 Para M = <code>[[${M[0]}], [${M[1]}], [${M[2]}]]</code> calcula el cofactor <b>${nm}</b> como en la diapositiva (con su signo, sin reducir mod 26).`, [val], null, `${nm} = ${form} = <b>${val}</b>. Los signos van en patrón de ajedrez (+ − + / − + − / + − +) y luego A⁻¹ = (det M)⁻¹ · [[A, D, G], [B, E, H], [C, F, I]] (cofactores transpuestos).`, `${pg(2, 33)} y 34`, { calc: 1 }); },
+  grilleEnc() { const h = Crypto.grilleRandom(4), msg = pick(GRILLE_MSGS), dir = rnd(3) === 0 ? 1 : 0, c = Crypto.grilleEnc(msg, h, 4, dir);
+    return { type: "widget", widget: "grilleRun", holes: h, msg, dir, solution: c, answer: groupN(c, 4), check: chkText([c]), prompt: `🌀 Cifra <code>${msg}</code> con esta rejilla 4×4, girando en sentido <b>${dir ? "horario ↻" : "antihorario ↺ (el de la clase)"}</b>. Toca los huecos en orden de lectura para escribir las letras, gira y repite. Luego escribe el criptograma leyendo por filas.`, explain: `En cada posición se escriben las letras por los huecos de arriba hacia abajo y de izquierda a derecha, se gira 90° y se repite 4 veces. Al final se lee por filas: <b>${groupN(c, 4)}</b>.`, page: `${pg(2, 40)} y 41`, calc: 1 }; },
+  grilleDec() { const h = Crypto.grilleRandom(4), msg = pick(GRILLE_MSGS), c = Crypto.grilleEnc(msg, h, 4, 0);
+    return { type: "widget", widget: "grilleRun", decrypt: true, holes: h, msg: c, dir: 0, solution: msg, answer: msg, check: chkText([msg]), prompt: `🌀 Descifra <code>${groupN(c, 4)}</code> con esta rejilla 4×4 (giro antihorario ↺, como en clase). El tablero ya tiene el criptograma; en cada posición lee las letras que asoman por los huecos.`, explain: `Se coloca el criptograma por filas y se leen los huecos en orden de lectura en las 4 posiciones: <b>${msg}</b>.`, page: `${pg(2, 40)} y 41`, calc: 1 }; },
+  homoEnc() { const w = pick(WORDS.filter(x => x.length <= 8));
+    return Object.assign(IN(`🐉 Cifra <code>${w}</code> con el layout homofónico de la diapositiva (tabla abajo). Escribe los números separados por espacios; cualquier homófono válido sirve.${homoTable()}`, [Crypto.homoEnc(w).join(" ")], `Cada letra puede ir con cualquiera de sus números. Una respuesta válida: <b>${Crypto.homoEnc(w).join(" ")}</b>. Las letras frecuentes (como E, con 12 números) tienen más homófonos, y así el histograma del criptograma queda plano.`, pg(2, 36), { calc: 1 }), { check: inp => Crypto.homoCheck(w, nums(inp)) }); },
+  homoDec() { const w = pick(WORDS.filter(x => x.length <= 8)), n = Crypto.homoEnc(w);
+    return IN(`🐉 Descifra <code>${n.join(" ")}</code> con el layout homofónico de la diapositiva.${homoTable()}`, [w], `Se busca cada número en la tabla: ${n.map(x => `${x}→${Crypto.homoDec([x])}`).join(", ")} = <b>${w}</b>. El descifrado es único aunque el cifrado no lo sea.`, pg(2, 36), { calc: 1 }); },
+  hayEnc() { const w = pick(HAY_WORDS), d = Crypto.hayEnc(w);
+    return IN(`🔢 Hayhanen, paso 1 (tablero con huecos de la pág. 48, clave <i>oriental</i>): convierte <code>${w}</code> en dígitos.${hayTable()}`, [d], `Las letras de la primera fila (o r i e n t a l) usan 1 dígito, el de su columna. Las demás usan 2: la fila (7 o 2) y la columna. ${[...w].map(c => `${c}=${Crypto.hayMap()[c]}`).join(", ")} → <b>${d}</b>.`, pg(2, 48), { calc: 1, hint: "Si la letra está en la fila de arriba, solo escribe el número de su columna." }); },
+  hayDec() { const w = pick(HAY_WORDS), d = Crypto.hayEnc(w);
+    return IN(`🔢 Con el mismo tablero de Hayhanen, convierte los dígitos <code>${d}</code> en letras.${hayTable()}`, [w], `Si aparece 7 o 2 se toman dos dígitos (fila + columna); cualquier otro dígito es una letra de la primera fila. Resultado: <b>${w}</b>.`, pg(2, 48), { calc: 1 }); },
+  sbox() { const x = rnd(8).toString(2).padStart(3, "0"), y = Crypto.sbox(x);
+    return IN(`📦 Usa la caja S de la diapositiva (n = 3, permutación (4,8,1,7,3,5,6,2) entre el decodificador 3:8 y el codificador 8:3). Si la entrada es <code>${x}</code>, ¿cuál es la salida?`, [y], `${x} = ${parseInt(x, 2)} activa la línea ${parseInt(x, 2)} (la ${parseInt(x, 2) + 1}.ª de la lista). La permutación la manda a la posición ${Crypto.SBOX[parseInt(x, 2)] + 1}.ª, es decir a la línea ${Crypto.SBOX[parseInt(x, 2)]} = <b>${y}</b>. En la diapositiva, 001 → 111.`, pg(2, 45), { calc: 1 }); },
+  pbox() { const P = shuffle([1, 2, 3, 4, 5, 6, 7, 8]), x = Array.from({ length: 8 }, () => rnd(2)).join(""), y = Crypto.pbox(x, P);
+    return IN(`🔀 Caja P de 8 bits: el bit de salida i es el bit de entrada P[i], con P = (${P.join(", ")}). Para la entrada <code>${x}</code>, ¿cuál es la salida?`, [y], `Salida = ${P.map(p => `b${p}`).join(" ")} = <b>${y}</b>. La caja P solo cambia de lugar los bits: la cantidad de 1 se mantiene (en la diapositiva entra un solo 1 y sale un solo 1).`, pg(2, 44), { calc: 1 }); },
+  colTrans() { const w = rint(4, 6), header = shuffle(Array.from({ length: w }, (_, i) => i + 1)), d = Array.from({ length: rint(2 * w + 1, 3 * w) }, () => rnd(10)).join(""), o = Crypto.colTrans(d, header);
+    return IN(`🧱 Transposición por columnas (la idea del paso de la pág. 49): escribe <code>${d}</code> en filas de ${w} bajo la cabecera <b>${header.join(" ")}</b> y lee columna por columna, empezando por la columna «1».`, [o], `Filas: ${groupN(d, w)}. Leyendo las columnas en orden 1, 2, …, ${w}: <b>${o}</b>.`, pg(2, 49), { calc: 1 }); },
+  playfairEnc() { const key = pick(PFKEYS), sq = Crypto.pfSquare(key), w = pick(WORDS.filter(x => x.length <= 8)), c = Crypto.pfEnc(sq, w).join("");
+    return IN(`🧩 Playfair con la clave <code>${key}</code>: cifra <code>${w}</code>. (I/J juntas; X entre letras dobles y al final si queda impar).<br>Cuadro:<br>${sqHTML(sq)}`, [c], `Dígrafos: ${Crypto.pfPrep(w).join(" ")} → <b>${Crypto.pfEnc(sq, w).join(" ")}</b>. Misma fila: a la derecha; misma columna: abajo; rectángulo: cada letra toma la esquina de su fila.`, pg(2, 11), { calc: 1 }); },
+  playfairDec() { const key = pick(PFKEYS), sq = Crypto.pfSquare(key), w = pick(WORDS.filter(x => x.length <= 8)), c = Crypto.pfEnc(sq, w).join(""), p = Crypto.pfDec(sq, c).join("");
+    return IN(`🧩 Playfair con la clave <code>${key}</code>: descifra <code>${groupN(c, 2)}</code> (escribe el texto tal como sale, con las X de relleno).<br>Cuadro:<br>${sqHTML(sq)}`, [p, p.replace(/X$/, ""), onlyLetters(w).replace(/J/g, "I")], `Para descifrar las reglas se invierten: fila → izquierda, columna → arriba, rectángulo igual. Resultado: <b>${p}</b>${p !== onlyLetters(w).replace(/J/g, "I") ? ` (sin rellenos: ${w})` : ""}.`, pg(2, 11), { calc: 1 }); },
+  playfairPrep() { const w = pick(["BALLOON", "MASSAGE", "LLAMA", "COFFEE", "GOOGLE", "KILLER", "BOOKKEEPER", "SHENLONG", "APPLE", "MISSION"]), p = Crypto.pfPrep(w).join(" ");
+    return IN(`✂️ Prepara <code>${w}</code> para Playfair: escribe los dígrafos (pares de letras).`, [p], `Si un par tiene dos letras iguales se mete X entre ellas; si al final queda una letra sola se le agrega X: <b>${p}</b>.`, pg(2, 11), { calc: 1 }); },
+  playfairRow() { const key = pick(PFKEYS), sq = Crypto.pfSquare(key);
+    return IN(`🔤 Construye el cuadro 5×5 de Playfair con la clave <code>${key}</code>. Escribe solo la <b>primera fila</b> (5 letras).`, [sq[0]], `Se escriben las letras de la clave sin repetir y luego el resto del alfabeto (I/J juntas). El cuadro completo es:<br>${sqHTML(sq)}`, pg(2, 11), { calc: 1 }); },
+};
+function homoTable() { return `<div class="tablewrap"><table class="eea small" style="margin-top:6px"><tr>${Object.keys(Crypto.HOMO).map(k => `<th>${k}</th>`).join("")}</tr><tr>${Object.values(Crypto.HOMO).map(v => `<td style="font-size:.7rem;vertical-align:top">${v.join("<br>")}</td>`).join("")}</tr></table></div>`; }
+function hayTable() { const T = Crypto.HAY_TOP; return `<div class="tablewrap"><table class="eea" style="margin-top:6px;max-width:420px"><tr><th></th>${[...T].map(d => `<th>${d}</th>`).join("")}</tr><tr><th></th>${[...Crypto.HAY_R1.padEnd(10, " ")].map(c => `<td>${c.trim()}</td>`).join("")}</tr><tr><th>7</th>${[...Crypto.HAY_R7].map(c => `<td>${c}</td>`).join("")}</tr><tr><th>2</th>${[...Crypto.HAY_R2].map(c => `<td>${c}</td>`).join("")}</tr></table></div>`; }
+/* ======================= MISIONES ======================= */
+const SLIDE_SQ = ["YOANP", "IZBCD", "EFGHK", "LMQRS", "TUVWX"]; // cuadro de P2 pág. 12
+const MISSIONS = [
+ { id: "m1", ball: 1, theme: "dn", icon: "📓", title: "Death Note I · L sospecha", topics: "T1 · Fundamentos, objetivos, actores y Kerckhoffs", pages: "P1 págs. 2–12, 20–21",
+   intro: `<p class="dn-note">Kira y Misa se mandan mensajes. L los vigila. Por cada regla que aciertes, Ryuk gana una 🍎.</p><p>Para cada situación tienes que decir qué objetivo de seguridad se rompe, quién es quién (Alice, Bob, Eve, Maggie…) y qué dice Kerckhoffs.</p>`,
+   build() {
+     const pool = [
+       MC("📓 L intercepta y <b>lee</b> los mensajes entre Kira y Misa. ¿Qué objetivo de seguridad se violó?", ["Confidencialidad", "Integridad", "Disponibilidad", "No repudio"], 0, "Confidencialidad: impedir el acceso no autorizado. Su pregunta guía es «Is private?». Incluye que nadie lea el contenido <i>y</i> que nadie identifique al emisor y al receptor.", pg(1, 5)),
+       MC("📓 Alguien cambia «mañana» por «hoy» en una orden de Kira antes de que llegue. ¿Qué objetivo se violó?", ["Autenticación", "Integridad", "Confidencialidad", "Disponibilidad"], 1, "Integridad: que no haya modificación («Has been altered?»). El receptor debe estar seguro de que el mensaje no se cambió ni se perdió.", pg(1, 6)),
+       MC("📓 Según la diapositiva, si un mensaje de Kira le llega a Misa <b>dos veces</b> (repetido), ¿qué requisito se rompe?", ["Integridad", "Disponibilidad", "No repudio", "Confidencialidad"], 0, "La integridad pide que el mensaje no se cambie ni se pierda, que no se impida que llegue y que <b>no llegue dos veces</b>.", pg(1, 6)),
+       MC("📓 L le escribe a Misa haciéndose pasar por Kira. ¿Cómo se llama ese acto y qué objetivo ataca?", ["Spoofing; autenticación", "Sniffing; confidencialidad", "DoS; disponibilidad", "Replay; no repudio"], 0, "La autenticación («Who am I dealing with?») exige que el receptor sepa que el mensaje viene del emisor real y no de un impostor. Ese envío por un impostor se llama <i>spoofing</i>.", pg(1, 7)),
+       MC("📓 Light envió un mensaje y luego jura que nunca lo escribió. ¿Qué objetivo debería impedirlo?", ["Integridad", "Autenticación", "No repudio", "Disponibilidad"], 2, "No repudio («Who sent/received it?»): el emisor no puede negar de forma creíble que lo envió, ni el receptor que lo recibió.", pg(1, 9)),
+       MC("📓 Kira tumba los servidores de la policía japonesa con un ataque DoS. ¿Qué objetivo cae?", ["Confidencialidad", "Disponibilidad", "Integridad", "Autenticación"], 1, "Disponibilidad («Is it available?»): la información, los controles y los canales deben funcionar cuando se necesitan. El DoS es la amenaza típica.", pg(1, 8)),
+       MC("¿Qué tres objetivos forman la tríada CIA?", ["Confidencialidad, integridad y disponibilidad", "Confidencialidad, integridad y autenticación", "Cifrado, integridad y acceso", "Autenticación, integridad y no repudio"], 0, "CIA = Confidentiality, Integrity, Availability. Es uno de los principios centrales de la seguridad de la información. En total son 5 objetivos: los 3 de la tríada más autenticación y no repudio.", pg(1, 4)),
+       MC("🕵️ L solo <b>escucha</b> las comunicaciones, sin modificarlas. ¿Qué personaje es?", ["Eve", "Maggie (Mallory)", "Peggy", "Victor"], 0, "Eve es la espía (eavesdropper), un atacante pasivo. Maggie/Mallory es activa: modifica, sustituye o repite mensajes. Peggy es quien prueba (prover) y Victor quien verifica (verifier).", pg(1, 12)),
+       MC("🕵️ Mikami intercepta, <b>modifica y reenvía</b> mensajes viejos. ¿Qué personaje es y por qué es peor?", ["Maggie/Mallory: atacante activo, más difícil de detener que Eve", "Eve: atacante pasiva, la más peligrosa", "Victor: es el que verifica", "Bob: el receptor legítimo"], 0, "Maggie (a veces Mallory) es activa: puede modificar, sustituir y repetir mensajes. La diapositiva dice que asegurar un sistema contra Maggie es mucho más difícil que contra Eve.", pg(1, 12)),
+       MC("¿Qué es el criptoanálisis?", ["El arte de descifrar el mensaje cifrado (romper el código)", "La ciencia que agrupa cifrar y descifrar", "El proceso de cifrar con una llave", "El texto ya cifrado"], 0, "Criptoanálisis: romper el código. Criptografía: hacer el código. Criptología: la ciencia que incluye a las dos.", pg(1, 11)),
+       MC("Según Kerckhoffs (1883), ¿qué debe mantenerse en secreto en un criptosistema?", ["Solo la llave", "El algoritmo y la llave", "Solo el algoritmo", "Nada; todo puede ser público"], 0, "«Un criptosistema debe ser seguro aunque todo sobre el sistema, excepto la llave, sea público». Es lo contrario de la seguridad por oscuridad.", pg(1, 21)),
+       MC("📓 Light piensa: «nadie descubrirá mi método si lo mantengo oculto». ¿Qué principio está ignorando?", ["Kerckhoffs: hay que asumir que el enemigo conoce el sistema", "Shannon: secreto perfecto", "La tríada CIA", "El no repudio"], 0, "Kerckhoffs, en la reformulación de Shannon: «The enemy knows the system». Depender de que el método sea secreto es <i>security by obscurity</i>.", pg(1, 21)),
+       MC("¿Cuál NO es una ventaja del diseño criptográfico abierto según la diapositiva de Kerckhoffs?", ["Hace que el algoritmo sea imposible de romper", "El escrutinio público da más confianza", "No hay que protegerse de la ingeniería inversa", "Se pueden establecer estándares"], 0, "Las ventajas que lista son el escrutinio público, no tener que protegerse de la ingeniería inversa y poder crear estándares. Ningún diseño es «imposible de romper» por ser abierto.", pg(1, 21)),
+       MC("Un cifrado basado en la dificultad de factorizar enteros, que nadie puede romper en un tiempo razonable, es…", ["Computacionalmente seguro", "Incondicionalmente seguro", "Perfectamente secreto", "Seguro por oscuridad"], 0, "Es seguridad computacional: el adversario no aprende nada en un tiempo razonable salvo con probabilidad muy pequeña. Se basa en problemas difíciles como la factorización o el logaritmo discreto.", pg(1, 20)),
+       MC("La palabra criptología viene del griego. ¿Qué significan sus raíces?", ["Oculto + escribir", "Número + clave", "Secreto + matemática", "Llave + romper"], 0, "<i>Kryptós</i> (oculto) + <i>gráphein</i> (escribir): escribir en secreto.", pg(1, 3)),
+       IN("✍️ ¿Cómo se llama el mensaje original, antes de cifrarlo? (en inglés o en español)", ["PLAINTEXT", "CLEARTEXT", "TEXTO PLANO", "TEXTO CLARO", "TEXTO EN CLARO", "MENSAJE EN CLARO"], "Plaintext o cleartext (texto plano o en claro). El mensaje cifrado es el ciphertext; cifrar es encryption y descifrar es decryption.", pg(1, 10)),
+       IN("✍️ Escribe el nombre del personaje que es atacante <b>pasivo</b>.", ["EVE"], "Eve, de <i>eavesdropper</i> (espía).", pg(1, 12)),
+       IN("✍️ Completa la reformulación de Shannon del principio de Kerckhoffs: «The enemy knows the …»", ["SYSTEM", "SISTEMA"], "«The enemy knows the system»: el enemigo conoce el sistema.", pg(1, 21)),
+     ];
+     return shuffle(pool).slice(0, 12);
+   },
+   ficha: `<h3>T1 · Fundamentos (P1 págs. 2–12, 20–21)</h3><ul>
+   <li><b>5 objetivos</b> (pág. 4) con su pregunta guía: Confidencialidad «Is private?» (5) · Integridad «Has been altered?» (6) · Autenticación «Who am I dealing with?» (7) · Disponibilidad «Is it available?» (8) · No repudio «Who sent/received it?» (9).</li>
+   <li>Tríada <b>CIA</b> = confidencialidad, integridad, disponibilidad.</li>
+   <li>Confidencialidad = nadie lee el contenido <i>y</i> nadie identifica a emisor y receptor.</li>
+   <li>Integridad = no se cambia ni se pierde, no se impide que llegue y <b>no llega dos veces</b>.</li>
+   <li>Spoofing = un impostor envía el mensaje (ataca la autenticación). DoS ataca la disponibilidad.</li>
+   <li>Terminología (10–11): plaintext/cleartext, encryption, ciphertext, decryption, key. Criptología = criptografía (hacer) + criptoanálisis (romper).</li>
+   <li>Actores (12): Alice y Bob (buenos), Eve (pasiva), Maggie/Mallory (activa: modifica, sustituye y repite), Peggy (prover), Victor (verifier). Rivest, 1978.</li>
+   <li>Seguridad incondicional vs. computacional (20): la computacional se basa en factorización y logaritmo discreto.</li>
+   <li><b>Kerckhoffs</b> (1883, pág. 21): solo la llave es secreta. Shannon: «The enemy knows the system». Lo contrario es la seguridad por oscuridad. Ventajas: escrutinio público, no hay que proteger contra ingeniería inversa, estándares.</li>
+   <li>✏️ Práctica: pago con Nequi → ¿qué objetivo protege el PIN, el SMS, la firma y el comprobante?</li></ul>` },
+
+ { id: "m2", ball: 2, theme: "dn", icon: "🍎", title: "Death Note II · El cuaderno de un solo uso", topics: "T2 · OTP, XOR, secreto perfecto", pages: "P1 págs. 13–20",
+   intro: `<p class="dn-note">Kira esconde sus órdenes con una libreta de un solo uso (OTP). Mientras use cada llave una sola vez, L no puede hacer nada. Si la repite, se delata.</p><p>Vas a cifrar y descifrar con OTP mod 26 y con XOR, y a explicar el secreto perfecto.</p>`,
+   build() {
+     const pool = [
+       MC("¿Quién creó el One-Time Pad y en qué año, según la diapositiva?", ["Gilbert Vernam, AT&T, 1917", "Claude Shannon, 1949", "Auguste Kerckhoffs, 1883", "Lester Hill, 1929"], 0, "Gilbert Sandford Vernam, AT&T, 1917. En los años 40 Shannon probó que tiene secreto perfecto.", pg(1, 13)),
+       MC("¿Qué condición pone la diapositiva sobre la llave (pad) del OTP?", ["Debe ser aleatoria, al menos tan larga como el mensaje y no se puede reutilizar", "Debe ser una palabra fácil de recordar", "Puede ser más corta si se repite", "Debe ser pública"], 0, "El pad es un bloque de datos aleatorios, al menos tan largo como el texto plano, y no se puede reutilizar.", pg(1, 13)),
+       MC("La operación XOR es equivalente a…", ["La suma módulo 2", "La multiplicación módulo 2", "La resta módulo 26", "El AND lógico"], 0, "XOR = suma mod 2: 0⊕0=0, 0⊕1=1, 1⊕0=1, 1⊕1=0.", pg(1, 14)),
+       MC("Shannon probó que el OTP tiene secreto perfecto si y solo si…", ["Hay tantas llaves posibles como textos planos posibles (tamaño de la llave ≥ tamaño del mensaje)", "La llave tiene 128 bits", "El algoritmo es secreto", "Se usa XOR en vez de mod 26"], 0, "Secreto perfecto si y solo si hay al menos tantas llaves como mensajes posibles, es decir, llave ≥ mensaje.", pg(1, 13)),
+       MC("¿Cuál es la definición formal de secreto perfecto?", ["Pr[M = m | C = c] = Pr[M = m]", "Pr[C = c] = 0", "Pr[M = m | C = c] = 1", "Pr[K = k] = 1/2"], 0, "Conocer el criptograma no cambia la probabilidad de ningún mensaje: el texto cifrado no filtra ninguna información.", pg(1, 18)),
+       MC("En la prueba de la pág. 19, con Pr(Mᵢ = 0) = x y llave uniforme, ¿cuánto vale Pr(Cᵢ = 1)?", ["1/2, sin importar x", "x", "1 − x", "x/2"], 0, "Pr(Cᵢ=1) = x/2 + (1−x)/2 = 1/2. El criptograma parece aleatorio y el atacante no puede hacer nada mejor que adivinar.", pg(1, 19)),
+       MC("¿Cuántas llaves posibles hay para un OTP mod 26 de longitud 5?", ["26⁵ = 11 881 376", "26 · 5 = 130", "5²⁶", "26! "], 0, "26⁵ = 11 881 376, cada una con probabilidad 1/26⁵, como dice la diapositiva.", pg(1, 16)),
+       MC("¿Cuál de estas NO es una desventaja del OTP según la diapositiva?", ["Es difícil cifrar y descifrar", "La llave debe ser tan larga como el mensaje", "Distribuir y gestionar llaves es difícil", "La llave solo se usa una vez"], 0, "Cifrar y descifrar es <b>fácil</b>: es una ventaja. Las desventajas (llave larga, distribución difícil, un solo uso) lo hacen poco práctico.", pg(1, 17)),
+       MC("📓 Kira usa la misma llave para dos mensajes. ¿Qué puede calcular L sin conocer la llave?", ["C1 ⊕ C2 = P1 ⊕ P2", "La llave K directamente", "Nada, sigue siendo perfecto", "Solo la longitud"], 0, "(P1⊕K)⊕(P2⊕K) = P1⊕P2: la llave se cancela. Con eso y conociendo un trozo de un mensaje, se recupera el otro. Por eso el pad «cannot be reused».", `${pg(1, 13)} (no reutilizar); la identidad es un complemento`),
+       MC("Según la diapositiva, ¿qué tipo de algoritmo es el OTP?", ["Un algoritmo polialfabético muy simple", "Un cifrado por transposición", "Un cifrado de clave pública", "Un hash"], 0, "La pág. 13 lo define como «a very simple Polyalphabetic encryption algorithm».", pg(1, 13)),
+       MC("¿Qué dice la diapositiva sobre el secreto perfecto en la práctica?", ["Un sistema teóricamente seguro puede ser inseguro en la práctica", "Si es teóricamente seguro, lo es siempre", "El OTP nunca se puede romper aunque se reutilice la llave", "Solo los cifrados de bloque lo tienen"], 0, "«It is impossible to guarantee the security of a cipher system even if it is theoretically secure, it may be insecure in practice». Además, el OTP es prácticamente el único ejemplo de secreto perfecto.", pg(1, 18)),
+       IN("✍️ Ejemplo de la diapositiva: cifra <code>HELLO</code> con la llave <code>EOXJF</code> (OTP mod 26).", ["LSIUT"], "H(7)+E(4)=L(11), E(4)+O(14)=S(18), L(11)+X(23)=34→8=I, L(11)+J(9)=U(20), O(14)+F(5)=T(19) → <b>LSIUT</b>.", pg(1, 16)),
+       IN("✍️ Práctica del plan: cifra <code>HOLA</code> con la llave <code>XMCK</code> (mod 26).", ["EANK"], "H7+X23=30→4=E, O14+M12=26→0=A, L11+C2=13=N, A0+K10=10=K → <b>EANK</b>.", pg(1, 16)),
+     ];
+     return shuffle(pool).slice(0, 7).concat(shuffle([G.otpEnc(), G.otpDec(), G.xor(), G.xorAscii(), G.xorReuse()]));
+   },
+   ficha: `<h3>T2 · OTP, XOR y secreto perfecto (P1 págs. 13–21)</h3><ul>
+   <li>OTP: Vernam, AT&T, 1917 (pág. 13). Pad aleatorio, <b>≥ largo del mensaje</b>, no se reutiliza.</li>
+   <li>XOR = suma mod 2 (pág. 14): 0⊕0=0, 0⊕1=1, 1⊕0=1, 1⊕1=0. Propiedades: a⊕a=0, a⊕0=a.</li>
+   <li>Ejemplo binario "FUN" (pág. 15): C = P ⊕ K y P = C ⊕ K.</li>
+   <li>Mod 26 (pág. 16): C = (P + K) mod 26, P = (C − K) mod 26. HELLO + EOXJF = <b>LSIUT</b>. Hay 26⁵ = 11 881 376 llaves de longitud 5.</li>
+   <li>Pros y contras (pág. 17): fácil y teóricamente irrompible, pero llave larga, distribución difícil y un solo uso → poco práctico.</li>
+   <li>Secreto perfecto (pág. 18): Pr[M = m | C = c] = Pr[M = m]. Shannon: posible si y solo si #llaves ≥ #mensajes.</li>
+   <li>Prueba (pág. 19): Pr(Cᵢ=1) = x/2 + (1−x)/2 = 1/2 → el criptograma parece aleatorio.</li>
+   <li>Reutilizar la llave: C1⊕C2 = P1⊕P2 (la llave se cancela). <i>Complemento.</i></li>
+   <li>⚠️ Error típico: restar sin sumar 26 cuando el resultado da negativo.</li></ul>` },
+
+ { id: "m3", ball: 3, theme: "moto", icon: "🏍️", title: "Gran Premio César · Tocancipá", topics: "T3 · Notación, monoalfabéticos, César, ROT13 y frecuencias", pages: "P2 págs. 3–17",
+   intro: `<p>Sales a la pista. Cada César que descifras acelera la moto 🏍️💨. Luego entras a boxes: un rival dejó un mensaje con sustitución monoalfabética y lo vas a romper con el histograma de frecuencias.</p>`,
+   build() {
+     const pool = [
+       MC("En la notación de la Parte 2, ¿qué propiedad une a E<sub>e</sub> y D<sub>d</sub>?", ["D<sub>d</sub>(E<sub>e</sub>(m)) = m para todo m: D<sub>d</sub> = E<sub>e</sub>⁻¹", "E<sub>e</sub> = D<sub>d</sub> siempre", "E<sub>e</sub> no necesita ser biyectiva", "d se obtiene sin conocer e"], 0, "Para cada llave e existe una única d con D<sub>d</sub> = E<sub>e</sub>⁻¹. Por eso E<sub>e</sub>: M → C debe ser una biyección.", `${pg(2, 3)} y 4`),
+       MC("En el cifrado de clave simétrica, ¿cuál es la principal desventaja?", ["Las dos partes tienen que intercambiar la llave de forma segura", "Es más lento que el asimétrico", "No se puede usar con bloques", "e y d son totalmente distintos"], 0, "Se usa la misma llave (e = d = k). Es más simple y rápido, pero hay que intercambiar la llave de forma segura.", pg(2, 5)),
+       MC("¿Cuáles son las tres clases de cifrado por bloques?", ["Sustitución, transposición y producto", "César, Vigenère y Hill", "ECB, CBC y CTR", "Mono, poli y homofónico"], 0, "Sustitución (reemplaza símbolos), transposición (permuta posiciones) y producto (combina las dos).", pg(2, 6)),
+       MC("¿Cómo clasifica la diapositiva al cifrado César?", ["Monoalfabético unilateral", "Monoalfabético poligráfico", "Polialfabético", "Monoalfabético multilateral"], 0, "Unilateral: la unidad cifrada siempre mide un carácter. Porta y Playfair son poligráficos; Garbage-in-between es multilateral (polifónico).", `${pg(2, 7)}–9`),
+       MC("¿Cuál de estos es monoalfabético <b>multilateral</b> (polifónico)?", ["Garbage-in-between", "Rot13", "Dots", "Playfair"], 0, "En el multilateral, la unidad cifrada mide más de un carácter. El ejemplo de la diapositiva es Garbage-in-between (Richelieu, 1626).", pg(2, 9)),
+       MC("Ejemplo de la diapositiva: RETURN TO ROME con César (k = 3). ¿Cuál es el criptograma?", ["UHWXU QWRUR PH", "SFUVS OUPSP NF", "OBQROK QL OLJB", "EHGHE AGBEB ZR"], 0, "Cada letra avanza 3: R→U, E→H, T→W… = UHWXU QWRUR PH.", pg(2, 13)),
+       MC("La diapositiva dice que César «se derrota fácilmente con…»", ["Análisis de frecuencias", "El EEA", "Kasiski", "Una caja S"], 0, "«This type of cipher is easily defeated by frequency analysis». Como solo hay 25 llaves, también cae por fuerza bruta.", pg(2, 13)),
+       MC("En la gráfica de frecuencias del <b>español</b> (pág. 14), ¿cuáles son las dos letras más frecuentes?", ["E y A", "E y T", "A y S", "O y E"], 0, "En español, E (≈13,7 %) y A (≈12,5 %), seguidas de O, S y R. En inglés: E, T, A, O.", pg(2, 14)),
+       MC("En la gráfica del <b>inglés</b> (pág. 14), ¿cuál es la segunda letra más frecuente?", ["T", "A", "O", "S"], 0, "En inglés: e (≈0,127), luego t (≈0,091), a (≈0,082) y o (≈0,075).", pg(2, 14)),
+       MC("ROT13 se usaba en foros (USENET, años 80) para…", ["Ocultar chistes, soluciones y spoilers a simple vista", "Proteger contraseñas bancarias", "Firmar mensajes", "Cifrar discos"], 0, "Era como «imprimir la respuesta del quiz al revés»: no es seguridad real. Corre 13 letras, así que cifrar y descifrar es lo mismo.", pg(2, 15)),
+       MC("En Garbage-in-between (Richelieu, 1626), ¿qué mensaje oculto revela la plantilla del ejemplo?", ["YOU KILL AT ONCE", "I LOVE YOU", "DEEP UNDER", "HYPERSPACE"], 0, "La llave es una plantilla de posiciones; el resto se rellena para que parezca otra historia. Mensaje: YOU KILL AT ONCE.", pg(2, 17)),
+       MC("¿Cuántas llaves tiene una sustitución monoalfabética general (cualquier permutación del alfabeto)?", ["26! ≈ 4·10²⁶", "25", "26²", "2²⁶"], 0, "Cualquier permutación de 26 letras: 26!. Aun así cae por frecuencias, porque cada letra siempre se cifra igual.", "Complemento (conteo); idea de monoalfabético en P2 pág. 8"),
+       IN("✍️ Ejercicio de la pág. 13: descifra los tres primeros grupos <code>WKLVL VHAWU HPHOB</code> (César, k = 3).", ["THISISEXTREMELY", "THIS IS EXTREMELY"], "Cada letra retrocede 3: <b>THIS IS EXTREMELY</b> (sigue: «insecure encryption…»).", pg(2, 13)),
+     ];
+     const q = shuffle(pool).slice(0, 6);
+     q.push({ type: "widget", widget: "race", prompt: "🏁 <b>Contrarreloj César</b>: descifra 6 palabras antes de 75 s. Cada acierto acelera la moto.", explain: "César: D<sub>k</sub>(y) = (y − k) mod 26. Con práctica se hace mentalmente usando la posición de cada letra (A=0 … Z=25).", page: pg(2, 13), calc: 1 });
+     q.push(...shuffle([G.caesarDec(), G.caesarEnc(), G.caesarBrute(), G.rot13()]).slice(0, 3));
+     q.push({ type: "widget", widget: "freq", prompt: "📊 <b>Boxes: César por frecuencias</b>. Mueve el control para correr el histograma de referencia del español hasta que coincida con el del criptograma. Esa corrida es la llave.", explain: "Si el pico del criptograma está donde debería estar la E (o la A), la distancia es la llave k.", page: pg(2, 14), calc: 1 });
+     q.push({ type: "widget", widget: "subst", prompt: "🔧 <b>Reto final: romper un monoalfabético</b>. El rival usó una sustitución cualquiera (no César). Asigna letras empezando por las más frecuentes (E, A, O, S…) y prueba palabras cortas como EL, LA, DE, QUE.", explain: "Una sustitución monoalfabética conserva las frecuencias: la letra más común del criptograma suele ser E o A. Las palabras cortas y repetidas ayudan a confirmar.", page: pg(2, 14), calc: 1 });
+     return q;
+   },
+   ficha: `<h3>T3 · Notación, monoalfabéticos, César y frecuencias (P2 págs. 3–17)</h3><ul>
+   <li>Notación (3–4): A alfabeto, M mensajes, C criptogramas, K llaves; E<sub>e</sub>: M→C biyección; D<sub>d</sub> = E<sub>e</sub>⁻¹, D<sub>d</sub>(E<sub>e</sub>(m)) = m.</li>
+   <li>Simétrico (5): e = d = k; es rápido, pero hay que intercambiar la llave de forma segura. Bloque (6): sustitución, transposición, producto.</li>
+   <li>Clasificación (7–9): monoalfabético → poligráfico (Porta, Playfair), unilateral (César, Rot13, Dots), multilateral (Garbage-in-between); polialfabético (Vigenère, Hill); homofónico.</li>
+   <li>César (13): E<sub>k</sub>(x) = (x + k) mod 26, D<sub>k</sub>(y) = (y − k) mod 26. RETURN TO ROME → UHWXU QWRUR PH (k = 3). 25 llaves útiles → fuerza bruta.</li>
+   <li>Frecuencias (14): español E, A, O, S, R…; inglés E, T, A, O, I…</li>
+   <li>ROT13 (15): k = 13; cifrar = descifrar. Dots (16). Garbage-in-between (17, Richelieu 1626): YOU KILL AT ONCE.</li>
+   <li>Monoalfabético general: 26! llaves, pero conserva las frecuencias.</li>
+   <li>⚠️ Error típico: asumir que la letra más frecuente siempre es E en un texto corto.</li></ul>` },
+
+ { id: "m4", ball: 4, theme: "apex", icon: "🎯", title: "Apex · Kings Canyon: Playfair", topics: "T4 · Porta y Playfair", pages: "P2 págs. 9–12",
+   timer: { mc: 45, input: 150, widget: 200, steps: 240 },
+   intro: `<p><b>Si apenas empiezas en Apex:</b> caes en un mapa con tu escuadrón de 3. Recoges <i>loot</i> (armas, escudos, objetos) y un <b>anillo</b> de tormenta se va cerrando. Si te quedas afuera, pierdes vida.</p><p>Aquí cada pregunta tiene un anillo (temporizador). Cada acierto te da un 🎁 <b>loot</b>, y con un loot compras una pista.</p>`,
+   build() {
+     const pool = [
+       MC("¿Quién inventó Playfair y quién lo popularizó?", ["Charles Wheatstone; lo popularizó el barón Lyon Playfair (1854)", "Lyon Playfair; lo popularizó Wheatstone", "Giovanni Porta, 1563", "Blaise de Vigenère"], 0, "Sir Charles Wheatstone lo inventó y el barón Lyon Playfair lo popularizó en 1854.", pg(2, 11)),
+       MC("En el cuadro 5×5 de Playfair, ¿qué se hace con I y J?", ["Comparten la misma casilla", "Se elimina la J y la I va dos veces", "Se cambian por X", "Se pone la J en una sexta columna"], 0, "Se escribe la palabra clave sin letras repetidas, combinando I y J en una casilla.", pg(2, 11)),
+       MC("Cifrando, si las dos letras están en la <b>misma fila</b>…", ["Cada una se cambia por la letra de su derecha", "Cada una se cambia por la de abajo", "Se intercambian", "Se toma la esquina del rectángulo"], 0, "Misma fila → derecha; misma columna → abajo; si no, cada letra toma la letra de su propia fila en la columna de la otra.", pg(2, 11)),
+       MC("Cifrando, si están en la <b>misma columna</b>…", ["Cada una se cambia por la letra de abajo", "Por la de la derecha", "Por la de arriba", "Se quedan iguales"], 0, "Misma columna → la letra de abajo (y vuelve arriba si se sale del cuadro).", pg(2, 11)),
+       MC("Para <b>descifrar</b> Playfair…", ["Se aplican las reglas al revés: fila → izquierda, columna → arriba; el rectángulo queda igual", "Se aplican exactamente las mismas reglas", "Se usa otro cuadro", "Se lee el cuadro por columnas"], 0, "«For deciphering, the rules are the exact opposite». Error típico: seguir moviendo a la derecha o hacia abajo.", pg(2, 11)),
+       MC("¿Qué se hace si un dígrafo tiene dos letras iguales (como SS en MESSAGE)?", ["Se mete X entre ellas", "Se borra una", "Se cifra igual", "Se cambia la segunda por J"], 0, "Se inserta X: ME SX SA GE. Si al final queda una letra sola, también se le agrega X.", `${pg(2, 11)}–12`),
+       MC(`Con el cuadro de la pág. 12:<br>${sqHTML(SLIDE_SQ)}<br>¿En qué se cifra el dígrafo <b>TH</b>?`, ["WE", "HT", "EW", "TU"], 0, "T (fila 5, col 1) y H (fila 3, col 4) forman rectángulo: T toma la letra de su fila en la columna de H = W; H toma la de su fila en la columna de T = E → <b>WE</b>.", pg(2, 12)),
+       MC(`Con el cuadro de la pág. 12:<br>${sqHTML(SLIDE_SQ)}<br>¿Qué regla se usa en <b>GE → HF</b>?`, ["Misma fila: a la derecha", "Misma columna: abajo", "Rectángulo", "Relleno con X"], 0, "G y E están en la fila E F G H K: cada una pasa a la de su derecha (G→H, E→F).", pg(2, 12)),
+       MC(`Con el cuadro de la pág. 12:<br>${sqHTML(SLIDE_SQ)}<br>¿En qué se cifra <b>CR</b>?`, ["HW", "DS", "RC", "BQ"], 0, "C y R están en la <b>misma columna</b> (la de C, H, R, W). Cada una baja una casilla: C→H y R→W. Resultado: <b>HW</b>, como en la figura.", pg(2, 12)),
+       MC("¿Hasta cuándo se usó Playfair en el ámbito militar?", ["Desde la guerra de los Bóers hasta la Segunda Guerra Mundial", "Solo en la Primera Guerra Mundial", "En la Guerra Fría", "Nunca se usó militarmente"], 0, "«It was in military use from the Boer War through World War II».", pg(2, 12)),
+       MC("¿Qué es el cifrado de Porta (1563)?", ["Un poligráfico con un tablero de 20×20 lleno de 400 símbolos únicos, uno para cada par de letras", "Un César con k = 13", "Una rejilla giratoria", "Un polialfabético con rotores"], 0, "Giovanni Battista della Porta, 1563: el tablero da un símbolo distinto para cada par de letras.", pg(2, 10)),
+       MC("Playfair y Porta son monoalfabéticos de tipo…", ["Poligráfico", "Unilateral", "Multilateral", "Homofónico"], 0, "Poligráfico: la unidad de texto plano es de más de una letra (aquí, pares).", pg(2, 9)),
+       IN(`✍️ Con el cuadro de la pág. 12:<br>${sqHTML(SLIDE_SQ)}<br>cifra <code>SECRET</code>.`, ["LKHWLY", "LK HW LY"], "SE CR ET → <b>LK HW LY</b> (igual que en el ejemplo de la diapositiva).", pg(2, 12)),
+       IN(`✍️ Ejercicio de la pág. 12, con el mismo cuadro:<br>${sqHTML(SLIDE_SQ)}<br>descifra los primeros 9 dígrafos <code>ZO MH LC HY ZK MN SO NQ DL</code>.`, ["OURFRIENDFROMPARIS", "OUR FRIEND FROM PARIS"], "ZO→OU, MH→RF, LC→RI, HY→EN, ZK→DF, MN→RO, SO→MP, NQ→AR, DL→IS = <b>OUR FRIEND FROM PARIS</b> (sigue: «examined his empty glass…»).", pg(2, 12)),
+       IN("✍️ Práctica del plan: con la clave <code>MONARCHY</code>, cifra <code>BALLOON</code>.", ["IBSUPMNA", "IB SU PM NA"], "Cuadro: MONAR / CHYBD / EFGIK / LPQST / UVWXZ. Dígrafos BA LX LO ON → <b>IB SU PM NA</b>.", pg(2, 11)),
+     ];
+     return shuffle(pool).slice(0, 8).concat(shuffle([G.playfairEnc(), G.playfairDec(), G.playfairPrep(), G.playfairRow()]));
+   },
+   ficha: `<h3>T4 · Porta y Playfair (P2 págs. 9–12)</h3><ul>
+   <li>Porta (10, 1563): poligráfico, tablero de 20×20 con 400 símbolos, uno por par de letras.</li>
+   <li>Playfair (11): Wheatstone, popularizado por Lyon Playfair en 1854. Cuadro 5×5 con la clave sin repetir y luego el resto del alfabeto; <b>I/J juntas</b>.</li>
+   <li>Preparar: pares; si se repite la letra, se mete X; si queda una sola al final, se agrega X.</li>
+   <li>Cifrar: misma fila → derecha; misma columna → abajo; rectángulo → la letra de tu fila en la columna de la otra.</li>
+   <li>Descifrar: lo contrario (izquierda, arriba).</li>
+   <li>Ejemplo (12), cuadro YOANP / IZBCD / EFGHK / LMQRS / TUVWX: THIS SECRET MESSAGE IS ENCRYPTED → WE DL LK HW LY LF XP QP HF DL HY HW OY YL KP.</li>
+   <li>El ejercicio de la pág. 12 empieza «OUR FRIEND FROM PARIS EXAMINED HIS EMPTY GLASS…».</li>
+   <li>MONARCHY: BALLOON → IB SU PM NA.</li>
+   <li>⚠️ Error típico: al descifrar, mover a la derecha o hacia abajo.</li></ul>` },
+
+ { id: "m5", ball: 5, theme: "apex", icon: "💍", title: "Apex · El anillo final: Vigenère y Enigma", topics: "T5 · Vigenère, Kasiski, IC y Enigma", pages: "P2 págs. 18–22",
+   timer: { mc: 40, input: 150, widget: 200, steps: 240 },
+   intro: `<p>Top 3 en World's Edge 🔥. El anillo final se cierra y el escuadrón enemigo se comunica con Vigenère. Hay que hallar la longitud de la llave (Kasiski), medir el IC y descifrar antes de que te alcance la tormenta.</p>`,
+   build() {
+     const pool = [
+       MC("¿Para qué se usan los cifrados polialfabéticos, según la diapositiva?", ["Para aplanar la distribución de frecuencias", "Para que el mensaje sea más corto", "Para no necesitar llave", "Para cifrar por bloques de bits"], 0, "Un mismo símbolo se puede cifrar con varios símbolos distintos, lo que aplana las frecuencias. Ejemplos: Vigenère y Hill.", pg(2, 18)),
+       MC("¿Qué dos ejemplos de polialfabéticos muestra la Parte 2?", ["Vigenère y Hill", "César y Rot13", "Playfair y Porta", "Rejilla y Hayhanen"], 0, "Vigenère (págs. 19–20) y Hill (págs. 23–34).", pg(2, 18)),
+       MC("El cifrado de Vigenère es la idea básica de…", ["La máquina Enigma, que usaba tres rotores", "El DES", "La rejilla de Fleissner", "El RSA"], 0, "«This cipher is the basic idea behind the Enigma machine, which used three rotors to encode».", pg(2, 20)),
+       MC("Durante cuánto tiempo se consideró irrompible Vigenère, y qué pasó en 1863?", ["300 años; un militar prusiano ideó cómo hallar la longitud de la llave", "100 años; se inventó Enigma", "50 años; Shannon lo rompió", "Nunca se consideró irrompible"], 0, "Fueron 300 años. En 1863 un militar prusiano (Kasiski) halló cómo calcular la longitud de la llave y luego aplicar frecuencias a cada parte.", pg(2, 20)),
+       MC("Ejemplo de la pág. 20 (clave RELATIONS): el primer grupo TOBEO se cifra como…", ["KSMEH", "RELAT", "UPCFP", "ZBBLK"], 0, "T+R=K, O+E=S, B+L=M, E+A=E, O+T=H → KSMEH. El criptograma completo es KSMEH ZBBLK SMEMP OGAJX SEJCS FLZSY.", pg(2, 20)),
+       MC("En Kasiski, después de hallar las distancias entre repeticiones, ¿qué se calcula?", ["El MCD de las distancias, que da la longitud probable de la llave", "La suma de las distancias", "El IC de cada distancia", "El inverso mod 26"], 0, "Pasos: buscar trigramas repetidos, medir distancias, sacar el MCD (longitud m), partir en m columnas y romper cada una como un César.", COMP),
+       MC("¿Qué IC esperas de un texto en español cifrado con <b>Vigenère</b> con una llave larga?", ["Cercano a 0,038 (como texto aleatorio)", "Cercano a 0,077 (como español)", "Exactamente 1", "Mayor que 0,1"], 0, "El polialfabético aplana las frecuencias, así que el IC baja hacia el valor aleatorio (≈1/26 ≈ 0,038). Un monoalfabético conserva el IC del idioma (≈0,077 en español).", `${COMP}; idea de la pág. 18`),
+       MC("¿Por qué cada columna de Vigenère (letras 1, 1+m, 1+2m…) se puede romper como un César?", ["Porque todas sus letras se cifraron con la misma letra de la llave", "Porque Vigenère es un César con k = 13", "Porque la llave es aleatoria", "No se puede"], 0, "C<sub>i</sub> = P<sub>i</sub> + K<sub>i mod m</sub>: las posiciones con el mismo i mod m usan el mismo desplazamiento.", pg(2, 20)),
+       MC("Error típico al cifrar Vigenère con espacios…", ["Desalinear la llave: hay que avanzarla solo con letras", "Usar mod 26", "Cifrar en mayúsculas", "Usar la tabla"], 0, "La llave se avanza solo con letras; los espacios no consumen letra de llave.", pg(2, 20)),
+       IN("✍️ Ejercicio de la pág. 20: cifra las 12 primeras letras <code>THEREISASECR</code> con la clave <code>CRYPTO</code>.", ["VYCGXWURQTVF", "VYC GXW URQ TVF"], "T+C=V, H+R=Y, E+Y=C, R+P=G, E+T=X, I+O=W, S+C=U, A+R=R, S+Y=Q, E+P=T, C+T=V, R+O=F → <b>VYC GXW URQ TVF</b> (en grupos de t = 3).", pg(2, 20)),
+       IN("✍️ Descifra <code>KSMEH ZBBLK</code> con la clave <code>RELATIONS</code>.", ["TOBEORNOTT", "TO BE OR NOT T"], "Es el inicio del ejemplo de la pág. 20: <b>TOBEO RNOTT</b>.", pg(2, 20)),
+     ];
+     return shuffle(pool).slice(0, 6).concat(shuffle([G.vigEnc(), G.vigDec(), G.vigKeyLetter(), G.kasiski(), G.kasiski(), G.ic()]));
+   },
+   ficha: `<h3>T5 · Polialfabéticos: Vigenère y Enigma (P2 págs. 18–22)</h3><ul>
+   <li>Polialfabético (18): un símbolo puede ir a varios → <b>aplana las frecuencias</b>. Ejemplos: Vigenère y Hill.</li>
+   <li>Vigenère (19–20): C<sub>i</sub> = (P<sub>i</sub> + K<sub>i mod m</sub>) mod 26; P<sub>i</sub> = (C<sub>i</sub> − K<sub>i mod m</sub>) mod 26.</li>
+   <li>Ejemplo (20): TO BE OR NOT TO BE THAT IS THE QUESTION, clave RELATIONS → KSMEH ZBBLK SMEMP OGAJX SEJCS FLZSY.</li>
+   <li>Ejercicio (20): THERE IS A SECRET PASSAGE…, CRYPTO, t = 3 → empieza VYC GXW URQ TVF…</li>
+   <li>Enigma (20–22): idea de Vigenère con 3 rotores (video y PDF enlazados en las págs. 21–22).</li>
+   <li>300 años «irrompible»; 1863: método prusiano para la longitud de la llave.</li>
+   <li><i>Complemento</i> Kasiski: trigramas repetidos → distancias → MCD = m → m columnas → César por frecuencias en cada una.</li>
+   <li><i>Complemento</i> IC = Σ nᵢ(nᵢ−1) / (N(N−1)); aleatorio ≈ 0,038, inglés ≈ 0,065, español ≈ 0,077.</li>
+   <li>⚠️ Error típico: desalinear la llave cuando hay espacios.</li></ul>` },
+
+ { id: "m6", ball: 6, theme: "halo", icon: "🪖", title: "Halo · Cortana vs. el Covenant: Hill", topics: "T6 · Hill, EEA e inversa mod 26", pages: "P2 págs. 23–34",
+   intro: `<p><b>Cortana:</b> «Jefe, el Covenant cifra sus transmisiones con matrices de Hill. Necesito inversos mod 26 y la inversa de la llave antes de que lleguen los Elites».</p><p>Tus <b>escudos</b> se recargan con rachas de 5 aciertos (Overshield). Si llegan a 0, Spartan caído.</p>`,
+   build() {
+     const pool = [
+       MC("¿Qué convención usan las diapositivas para cifrar con Hill?", ["Vector fila: (c₁, c₂) = (m₁, m₂)·K y m = c·K⁻¹", "Vector columna: C = K·P siempre", "c = K + m", "c = m·K mod 2"], 0, "La pág. 23 escribe (c₁, c₂) = (m₁, m₂)·[[11, 8], [3, 7]], es decir c₁ = 11m₁ + 3m₂ y c₂ = 8m₁ + 7m₂. Ojo: algunos textos usan C = K·P, que equivale a usar la transpuesta.", pg(2, 23)),
+       MC("¿Quién propuso el cifrado de Hill y cuándo?", ["Lester S. Hill, 1929", "Horst Feistel, 1971", "Blaise de Vigenère, siglo XVI", "Claude Shannon, 1949"], 0, "Lester S. Hill, 1929. Cada letra es un dígito en base 26 (A=0, B=1, …).", pg(2, 23)),
+       MC("¿Cuál es la inversa mod 26 de K = [[11, 8], [3, 7]] según la diapositiva?", ["[[7, 18], [23, 11]]", "[[7, −8], [−3, 11]]", "[[11, 3], [8, 7]]", "[[1, 0], [0, 1]]"], 0, "K·K⁻¹ = [[261, 286], [182, 131]] ≡ [[1, 0], [0, 1]] mod 26.", pg(2, 24)),
+       MC("Una matriz 2×2 es invertible mod 26 si y solo si…", ["det ≠ 0 y mcd(det, 26) = 1", "det es par", "det = 13", "sus entradas son menores que 26"], 0, "Si det = 0 o mcd(det, 26) ≠ 1, no tiene inversa. El inverso del det se calcula con el EEA.", pg(2, 27)),
+       MC("Una llave de Hill tiene det = 13. ¿Sirve?", ["No: mcd(13, 26) = 13 ≠ 1", "Sí, porque 13 es primo", "Sí, porque det ≠ 0", "Solo para descifrar"], 0, "26 = 2·13, así que cualquier det par o múltiplo de 13 no tiene inverso mod 26.", pg(2, 27)),
+       MC("¿Cuál es la adjunta de A = [[a, b], [c, d]]?", ["[[d, −b], [−c, a]]", "[[a, c], [b, d]]", "[[−a, b], [c, −d]]", "[[d, c], [b, a]]"], 0, "A⁻¹ = (det A)⁻¹ · Adj A, con Adj A = [[d, −b], [−c, a]] y det A = ad − bc.", pg(2, 27)),
+       MC("En el ejemplo de la pág. 31, det A = 77 − 24 = 53. ¿Cuánto vale (det A)⁻¹ mod 26?", ["1, porque 53 ≡ 1 (mod 26)", "53", "25", "No existe"], 0, "53 = 2·26 + 1, así que 53 ≡ 1 y su inverso es 1. Por eso A⁻¹ = 1·[[7, −8], [−3, 11]] ≡ [[7, 18], [23, 11]].", pg(2, 31)),
+       MC("En la tabla de la pág. 29, ¿qué devuelve EEA(372, 321)?", ["(3, −44, 51)", "(1, 7, −44)", "(3, 51, −44)", "(51, 3, 1)"], 0, "d = 3 y −44·372 + 51·321 = 3.", pg(2, 29)),
+       MC("Según el pseudocódigo del EEA (pág. 28), si b = 0 se devuelve…", ["(a, 1, 0)", "(0, 1, 0)", "(b, 0, 1)", "(1, a, 0)"], 0, "Caso base: si b = 0, return (a, 1, 0). Si no, (d′, x′, y′) = EEA(b, a mod b) y se devuelve (d′, y′, x′ − q·y′) con q = ⌊a/b⌋.", pg(2, 28)),
+       MC("Para invertir una 3×3 por cofactores, ¿qué patrón de signos se usa?", ["Tablero de ajedrez: + − + / − + − / + − +", "Todos positivos", "Todos negativos", "+ + − / − − + / + + −"], 0, "Luego se transpone: A⁻¹ = (det M)⁻¹ · [[A, D, G], [B, E, H], [C, F, I]].", `${pg(2, 33)}–34`),
+       MC("Error típico al invertir una 3×3…", ["Olvidar transponer la matriz de cofactores", "Usar mod 26", "Calcular el determinante", "Usar el EEA"], 0, "Adj = (cofactores)ᵀ. También es común no reducir los negativos mod 26.", pg(2, 34)),
+       IN("✍️ Ejemplo de la pág. 25: cifra <code>JULY</code> con K = [[11, 8], [3, 7]].", ["DELW"], "(9, 20)·K = (99 + 60, 72 + 140) = (159, 212) ≡ (3, 4) = DE; (11, 24)·K ≡ (11, 22) = LW → <b>DELW</b>.", pg(2, 25)),
+       IN("✍️ Ejercicio de la pág. 25: descifra <code>VKFZRVWTIAZSMISGKA</code> con la misma llave (K⁻¹ = [[7, 18], [23, 11]]).", ["NUMBERTHEORYISEASY", "NUMBER THEORY IS EASY"], "Bloque a bloque m = c·K⁻¹: VK→NU, FZ→MB, RV→ER, WT→TH, IA→EO, ZS→RY, MI→IS, SG→EA, KA→SY = <b>NUMBER THEORY IS EASY</b>.", pg(2, 25)),
+       NUMS("✍️ Ejercicio de la pág. 32: halla la inversa de A = [[14, 5], [7, 7]] <b>mod 37</b>. Escribe 4 números por filas.", [33, 24, 4, 29], 37, "det = 98 − 35 = 63 ≡ 26 (mod 37); 26⁻¹ ≡ 10 (26·10 = 260 = 7·37 + 1). Adj = [[7, −5], [−7, 14]]; ·10 → [[70, −50], [−70, 140]] ≡ <b>[[33, 24], [4, 29]]</b> mod 37.", pg(2, 32)),
+       NUMS("✍️ Práctica del plan: calcula 17⁻¹ mod 26.", [23], 26, "17·23 = 391 = 15·26 + 1 → 17⁻¹ ≡ <b>23</b>.", pg(2, 30)),
+     ];
+     const q = shuffle(pool).slice(0, 7);
+     const a = rint(150, 600), b = rint(40, a - 1);
+     q.push({ type: "widget", widget: "eea", a, b, prompt: `🧠 <b>EEA paso a paso</b>: completa la tabla de EEA(${a}, ${b}) como en la pág. 29. Llena q en cada fila y luego x, y de abajo hacia arriba (x = y′ de la fila siguiente, y = x′ − q·y′).`, explain: "La tabla baja con divisiones (a, b) → (b, a mod b) y sube con x = y′, y = x′ − q·y′.", page: `${pg(2, 28)}–29`, calc: 1 });
+     q.push(...shuffle([G.inv26(), G.hasInv(), G.hillEnc(), G.cofactor()]).slice(0, 3), G.hillSteps(), G.hillSteps());
+     return q;
+   },
+   ficha: `<h3>T6 · Hill, EEA e inversa mod 26 (P2 págs. 23–34)</h3><ul>
+   <li>Hill (23, 1929): A=0…Z=25. Convención de clase: <b>(c₁, c₂) = (m₁, m₂)·K</b> y <b>m = c·K⁻¹</b>.</li>
+   <li>K = [[11, 8], [3, 7]] → K⁻¹ = [[7, 18], [23, 11]] (24). JULY → DELW (25). Ejercicio: VKFZRVWTIAZSMISGKA → NUMBER THEORY IS EASY.</li>
+   <li>2×2 (27): A⁻¹ = (det A)⁻¹·[[d, −b], [−c, a]] mod 26. Invertible ⇔ det ≠ 0 y mcd(det, 26) = 1.</li>
+   <li>EEA (28): EEA(a, 0) = (a, 1, 0); si no, (d′, x′, y′) = EEA(b, a mod b) y se devuelve (d′, y′, x′ − ⌊a/b⌋·y′).</li>
+   <li>Tabla (29): EEA(372, 321) = (3, −44, 51).</li>
+   <li>Pág. 31: det = 53 ≡ 1 → det⁻¹ = 1. Pág. 32: [[14, 5], [7, 7]] mod 37 → [[33, 24], [4, 29]].</li>
+   <li>Unidades mod 26 y sus inversos: 1↔1, 3↔9, 5↔21, 7↔15, 11↔19, 17↔23, 25↔25.</li>
+   <li>3×3 (33–34): cofactores con signos de ajedrez (+ − + / − + − / + − +); A⁻¹ = det⁻¹·[[A, D, G], [B, E, H], [C, F, I]] (transpuesta).</li>
+   <li>⚠️ Errores típicos: no transponer, no reducir los negativos mod 26, usar un det par o múltiplo de 13.</li></ul>` },
+
+ { id: "m7", ball: 7, theme: "dbz", icon: "🐉", title: "Dragon Ball · La Habitación del Tiempo", topics: "T7–T8 · Homofónico, rejilla, cajas P/S, Lucifer y Hayhanen", pages: "P2 págs. 35–51",
+   intro: `<p>Un día adentro es un año de entrenamiento. Goku te pone a entrenar con la rejilla giratoria de Fleissner, los homófonos, las cajas P y S de Lucifer y el tablero de Hayhanen. Con cada acierto tu <b>nivel de pelea</b> sube en el rastreador.</p>`,
+   build() {
+     const pool = [
+       MC("¿Qué caracteriza a un cifrado homofónico?", ["Una letra del texto plano puede representarse con varios símbolos; el alfabeto cifrado es más grande", "Cada letra va siempre al mismo símbolo", "Permuta las posiciones", "Usa una matriz"], 0, "A cada letra se le asignan símbolos según su frecuencia: las letras frecuentes reciben más símbolos.", pg(2, 35)),
+       MC("Con el layout de la pág. 36, ¿cuál es el cifrado del ejemplo «Crypto is fun»?", ["62 40 21 95 69 90 32 19 31 61 91", "13 5 26 0 22 81 88 47", "2 15 4 94 28 34 60 89", "3 17 24 15 19 14"], 0, "C→62, R→40, Y→21, P→95, T→69, O→90, I→32, S→19, F→31, U→61, N→91.", pg(2, 36)),
+       MC("En el layout de la pág. 36, ¿qué letra tiene más homófonos?", ["E (12 números)", "A (8)", "T (9)", "Z (1)"], 0, "E es la más frecuente, así que tiene más símbolos: 14, 16, 24, 44, 46, 55, 57, 64, 74, 82, 87, 98.", pg(2, 36)),
+       MC("¿En qué se diferencia una transposición de una sustitución?", ["Solo cambia el orden de los caracteres (una biyección sobre las posiciones)", "Cambia cada letra por otra", "Usa homófonos", "Necesita una matriz invertible"], 0, "En la transposición las letras se revuelven: se aplica una función biyectiva a las posiciones para cifrar y su inversa para descifrar.", pg(2, 39)),
+       MC("¿Quién creó la rejilla giratoria y quién la usó?", ["Eduard B. Fleissner v. Wostrowitz (1881); Alemania en la Primera Guerra Mundial", "Horst Feistel (1971); IBM", "Reino Hayhanen (1950s); la URSS", "Lester Hill (1929); EE. UU."], 0, "Fleissner, 1881. La usó Alemania en la Primera Guerra Mundial.", pg(2, 40)),
+       MC("¿Qué condición debe cumplir la rejilla giratoria?", ["Cada celda aparece en a lo sumo una posición al girar por las 4 posiciones", "Debe tener la mitad de las celdas abiertas", "Los huecos deben estar en la diagonal", "Debe ser de 5×5"], 0, "«Each cell in the square appears in no more than one position when the grille is rotated». En 4×4 hacen falta 16/4 = 4 huecos, uno por órbita de rotación.", pg(2, 40)),
+       MC("¿Cuántas rejillas 4×4 válidas existen?", ["4⁴ = 256", "16", "4! = 24", "2¹⁶"], 0, "Hay n²/4 = 4 órbitas de 4 celdas, y en cada una se elige 1 de 4 posiciones: 4⁴ = 256.", "Complemento (conteo); condición en P2 pág. 40"),
+       MC("Un cifrado producto combina…", ["Sustitución (confusión) y transposición (difusión)", "Dos César", "Hill y Vigenère", "Hash y firma"], 0, "Dos sustituciones dan otra sustitución y dos transposiciones dan otra transposición; una sustitución seguida de una transposición da un cifrado mucho más difícil. Es el puente hacia DES.", pg(2, 42)),
+       MC("Según la pág. 42, la <b>difusión</b>…", ["Dispersa las propiedades estadísticas del texto plano", "Hace compleja la relación entre llave y criptograma", "Comprime el texto", "Genera la llave"], 0, "Difusión: dispersa la estadística del texto plano (transposición). Confusión: hace compleja la relación criptograma–llave (sustitución).", pg(2, 42)),
+       MC("Sobre Lucifer (Feistel, IBM, 1971), ¿qué afirma la diapositiva?", ["Usa permutaciones en bloques grandes y sustituciones en bloques pequeños, pero sin llave es inseguro", "Es el AES", "Usa rotores como Enigma", "Es un cifrado de clave pública"], 0, "Los chips que permutaban eran las cajas P y los que sustituían, las cajas S. El nombre viene de «Demon» → «Lucifer». Es el predecesor del DES.", `${pg(2, 43)} y 46`),
+       MC("Una caja P (P-box)…", ["Permuta los bits de su entrada", "Cambia n bits por otros n bits con una tabla", "Suma la llave", "Comprime 8 bits en 3"], 0, "La caja P solo cambia el orden: en el ejemplo entra un 1 en la línea 1 y sale en otra posición.", pg(2, 44)),
+       MC("Una caja S (S-box), como la de la pág. 45…", ["Codifica números de n bits en otros números de n bits (3 → 8 → permutación → 3)", "Solo permuta los bits", "Duplica los bits", "Es la llave de Lucifer"], 0, "Decodificador 3:8, permutación (4,8,1,7,3,5,6,2) y codificador 8:3. En la figura, la entrada 001 sale como 111.", pg(2, 45)),
+       MC("Hayhanen es una variación del VIC/Nihilist que consiste en…", ["Un tablero con huecos (straddling checkerboard) y luego una doble transposición por columnas con disrupciones", "Una rejilla giratoria", "Un Hill 3×3", "Un OTP binario"], 0, "Lo usó un espía ruso capturado en Nueva York en los años 50. Resistió al FBI 4 años, hasta que Reino Hayhanen desertó en 1957 y entregó la palabra SNEGOPAD.", pg(2, 47)),
+       MC("En el tablero de Hayhanen de la pág. 48, ¿qué letras se codifican con un solo dígito?", ["Las de la clave «oriental» en la primera fila", "Las vocales", "Las de las filas 7 y 2", "Ninguna"], 0, "Las 8 letras de la primera fila (o r i e n t a l) usan el dígito de su columna. Las filas se numeran con los dígitos que quedaron libres en la primera fila (7 y 2), y sus letras usan 2 dígitos.", pg(2, 48)),
+       IN("✍️ Ejercicio de la pág. 36: descifra <code>13 5 26 0 22 81 88 47</code> con el layout homofónico.", ["COLOMBIA"], "13→C, 5→O, 26→L, 0→O, 22→M, 81→B, 88→I, 47→A = <b>COLOMBIA</b> 🇨🇴.", pg(2, 36)),
+       IN("✍️ Ejemplo de la pág. 40: cifra <code>JIM ATTACKS AT DAWN</code> con los huecos (1,1), (3,2), (3,4), (4,3) y giro antihorario.", ["JKTDSAATWIAMCNAT", "JKTD SAAT WIAM CNAT"], "Posición 1: J I M A; gira; T T A C; gira; K S A T; gira; D A W N. Leído por filas: <b>JKTD SAAT WIAM CNAT</b>.", `${pg(2, 40)}–41`),
+       IN("✍️ Con el tablero de la pág. 48, ¿qué dígitos le corresponden a <code>feb</code>?", ["74473"], "f = 74 (fila 7, columna 4), e = 4 (primera fila), b = 73 → <b>74 4 73</b>, como empieza el ejemplo: 7447327…", pg(2, 48)),
+     ];
+     const q = shuffle(pool).slice(0, 7);
+     q.push({ type: "widget", widget: "grilleBuild", prompt: "🧩 <b>Construye una rejilla 4×4 válida</b>: toca 4 celdas para abrir huecos. Al girar 4 veces deben cubrir las 16 celdas sin repetir.", explain: "Cada celda pertenece a una órbita de 4 (ella y sus 3 rotaciones). Una rejilla válida tiene exactamente un hueco por órbita.", page: pg(2, 40), calc: 1 });
+     q.push(G.grilleEnc(), ...shuffle([G.grilleDec(), G.homoEnc(), G.homoDec(), G.hayEnc(), G.hayDec(), G.sbox(), G.pbox(), G.colTrans()]).slice(0, 5));
+     return q;
+   },
+   ficha: `<h3>T7 · Homofónico y rejilla giratoria (P2 págs. 35–41)</h3><ul>
+   <li>Homofónico (35): varias opciones por letra, alfabeto cifrado más grande; símbolos según la frecuencia → histograma plano.</li>
+   <li>Layout (36): CRYPTO IS FUN → 62 40 21 95 69 90 32 19 31 61 91. Ejercicio: 13 5 26 0 22 81 88 47 → COLOMBIA. E tiene 12 símbolos.</li>
+   <li>Pág. 38: contar layouts con m números y n letras (idea combinatoria; hay que proponer la fórmula y un script).</li>
+   <li>Transposición (39): biyección sobre las posiciones.</li>
+   <li>Rejilla de Fleissner (40, 1881, Alemania en la 1.ª GM): cada celda se descubre una sola vez en las 4 posiciones. n×n par → n²/4 huecos, uno por órbita → 4^(n²/4) rejillas (256 en 4×4).</li>
+   <li>Procedimiento: escribir por los huecos en orden de lectura, girar 90° (antihorario en clase), repetir 4 veces y leer por filas. JIM ATTACKS AT DAWN → JKTD SAAT WIAM CNAT (41).</li>
+   <li>⚠️ Errores típicos: girar en el sentido equivocado; poner 2 huecos en la misma órbita.</li></ul>
+   <h3>T8 · Cifrados producto, cajas P y S, y Hayhanen (P2 págs. 42–51)</h3><ul>
+   <li>Producto (42): sustitución (<b>confusión</b>: relación llave–criptograma compleja) + transposición (<b>difusión</b>: dispersa la estadística). Puente hacia DES.</li>
+   <li>Lucifer (43, Feistel, IBM 1971): cajas P (permutan bits) y cajas S (n bits → n bits). Sin llave es inseguro. Demon → Lucifer. Alterna P y S; predecesor del DES (46).</li>
+   <li>Caja S (45): 3:8 → permutación (4,8,1,7,3,5,6,2) → 8:3. 001 → 111.</li>
+   <li>Hayhanen (47): VIC/Nihilist = tablero con huecos + doble transposición por columnas con disrupciones; SNEGOPAD; 1957.</li>
+   <li>Tablero (48), cabecera 3 9 6 4 0 8 5 1 7 2: o r i e n t a l (1 dígito); fila 7: b c d f g h j k m p; fila 2: q s u v w x y z / . (2 dígitos). En el ejemplo el número 4 aparece como 444.</li>
+   <li>Luego (49–50): se escribe en bloque bajo la cabecera, se leen columnas desde la «1», viene la ruta en zigzag y se transcribe en grupos de 5.</li>
+   <li>✏️ Ejercicio de la pág. 51: clave «crypto», mensaje «Se aproxima el primer parcial…».</li></ul>` },
+];
+const BOSS = { id: "boss", theme: "boss", icon: "🦗", title: "Jefe final · Los Juegos de Cell", topics: "Simulacro mixto cronometrado (T1–T8)", timerTotal: 15 * 60,
+  intro: `<p><b>Cell Perfecto</b> absorbió todos los cifrados de la Parte 1 y la Parte 2. Tienes <b>15 minutos</b> y 3 escudos. Gana con al menos el 75 % de aciertos para invocar a Shenlong.</p>`,
+  build() {
+    const all = [];
+    for (const m of MISSIONS) { const qs = m.build().filter(q => q.type !== "widget" || q.widget === "grilleRun"); all.push(...shuffle(qs).slice(0, 2)); }
+    all.push(G.hillSteps(), G.vigDec(), G.otpEnc(), G.kasiski(), G.playfairEnc());
+    return shuffle(all).slice(0, 14);
+  } };
+/* ======================= WIDGETS INTERACTIVOS ======================= */
+const WIDGETS = {
+  race(el, q, done) {
+    const GOAL = 6, T = 75; let prog = 0, cur = null, t0 = Date.now(), misses = 0;
+    el.appendChild(h(`<div><div class="track"><div class="lane"></div><div class="flag">🏁</div><div class="bike" id="bike">${motoSVG()}</div></div>
+      <div class="qhead"><span class="speedo" id="spd">0 km/h</span><span>Vuelta: <b id="prog">0</b>/${GOAL}</span><span id="rtime">⏱️ ${T}s</span></div>
+      <div class="ctext" id="rq" style="font-size:1.3rem;text-align:center"></div><input id="rin" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Texto descifrado + Enter"><div class="actions"><button class="pri" id="rgo">Responder</button><button class="ghost" id="rquit">Rendirse</button></div><div id="rmsg" class="small"></div></div>`));
+    const next = () => { const w = pick(WORDS.filter(x => x.length <= 8)), k = rint(1, 25); cur = { w, k, c: Crypto.caesar(w, k) }; $("#rq").innerHTML = `${cur.c} <span class="small muted">(k = ${k})</span>`; $("#rin").value = ""; };
+    const move = () => { const tr = $(".track").clientWidth - 90; $("#bike").style.left = (tr * prog / GOAL) + "px"; $("#spd").textContent = (prog ? 60 + prog * 38 : 0) + " km/h"; $("#prog").textContent = prog; };
+    const finish = (ok) => { const s = Math.round((Date.now() - t0) / 1000); done(ok, ok ? `🏁 ¡Cruzaste la meta en ${s} s con ${misses} error${misses === 1 ? "" : "es"}!` : `⏱️ No llegaste a la meta (${prog}/${GOAL}).`); };
+    const go = () => { if (R.answered) return; const v = norm($("#rin").value); if (!v) return; if (v === cur.w) { prog++; move(); toast("🏍️💨 ¡Vroom!"); if (prog >= GOAL) return finish(true); } else { misses++; $("#rmsg").innerHTML = `<span class="bad-t">✗ ${cur.c} era ${cur.w}</span>`; $(".track").classList.remove("shake"); void $(".track").offsetWidth; $(".track").classList.add("shake"); } next(); };
+    $("#rgo").onclick = go; $("#rin").onkeydown = e => { if (e.key === "Enter") go(); };
+    $("#rquit").onclick = () => finish(false);
+    next(); move();
+    R.raceTimer = setInterval(() => { const left = T - Math.floor((Date.now() - t0) / 1000); const e = $("#rtime"); if (e) e.textContent = `⏱️ ${Math.max(0, left)}s`; if (left <= 0) { clearInterval(R.raceTimer); R.raceTimer = null; if (!R.answered) finish(false); } }, 250);
+  },
+  freq(el, q, done) {
+    const text = pick(ES_TEXTS), k = rint(1, 25), c = Crypto.caesar(text, k), cnt = Array(26).fill(0);
+    for (const ch of c) cnt[L2N(ch)]++;
+    const mx = Math.max(...cnt), rmx = Math.max(...Object.values(ES_FREQ));
+    el.appendChild(h(`<div><div class="ctext small">${groupN(c, 5)}</div>
+     <p class="small">🟧 Histograma del criptograma (${c.length} letras)</p><div class="hist" id="hc">${cnt.map(n => `<div style="height:${(100 * n / mx).toFixed(0)}%" title="${n}"></div>`).join("")}</div><div class="hlab">${AZ.split("").map(x => `<span>${x}</span>`).join("")}</div>
+     <p class="small">🟦 Frecuencias de referencia del español (las de la gráfica de la pág. 14), corridas s posiciones</p><div class="hist ref" id="hr"></div><div class="hlab">${AZ.split("").map(x => `<span>${x}</span>`).join("")}</div>
+     <label>Corrimiento s = <b id="sv">0</b></label><input type="range" id="sl" min="0" max="25" value="0" style="padding:0">
+     <div class="actions"><button class="pri" id="fgo">Confirmar llave k = s</button></div></div>`));
+    const draw = s => { $("#sv").textContent = s; $("#hr").innerHTML = AZ.split("").map((_, j) => `<div style="height:${(100 * ES_FREQ[N2L(j - s)] / rmx).toFixed(0)}%"></div>`).join(""); };
+    $("#sl").oninput = e => draw(+e.target.value); draw(0);
+    $("#fgo").onclick = () => { if (R.answered) return; const s = +$("#sl").value; done(s === k, `La llave era <b>k = ${k}</b> (tu respuesta: ${s}). Texto: <span class="mono">${esc(text)}</span>`); };
+    q.answer = "la llave que alinea los dos histogramas";
+  },
+  subst(el, q, done) {
+    const text = pick(ES_TEXTS), perm = shuffle(AZ.split("")), enc = {}, dec = {};
+    AZ.split("").forEach((p, i) => { enc[p] = perm[i]; dec[perm[i]] = p; });
+    const c = text.split("").map(ch => (enc[ch] || ch)).join(""), cnt = {};
+    for (const ch of c) if (dec[ch]) cnt[ch] = (cnt[ch] || 0) + 1;
+    const letters = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]);
+    let hints = 0;
+    el.appendChild(h(`<div><div class="ctext" id="sc">${esc(c)}</div><p class="small">Escribe debajo de cada letra cifrada la letra clara que crees que es (ordenadas de la más frecuente a la menos frecuente):</p>
+     <div class="subgrid" id="sg">${letters.map(L => `<label data-l="${L}">${L} <span>(${cnt[L]})</span><input maxlength="1" data-l="${L}"></label>`).join("")}</div>
+     <p class="small">Vista previa (· = sin asignar):</p><div class="ctext" id="sp"></div>
+     <div class="actions"><button class="pri" id="sgo">Comprobar</button><button id="shint">💡 Revelar una letra</button><button class="ghost" id="squit">Rendirse</button></div><div id="smsg" class="small"></div></div>`));
+    const get = () => { const m = {}; el.querySelectorAll("#sg input").forEach(i => { const v = norm(i.value).replace(/[0-9]/g, ""); if (v) m[i.dataset.l] = v[0]; }); return m; };
+    const prev = () => { const m = get(); $("#sp").textContent = c.split("").map(ch => (dec[ch] ? (m[ch] || "·") : ch)).join(""); };
+    el.querySelectorAll("#sg input").forEach(i => i.oninput = () => { i.value = i.value.toUpperCase(); prev(); });
+    prev();
+    $("#shint").onclick = () => { if (R.answered) return; const m = get(); const L = letters.find(x => m[x] !== dec[x]); if (!L) return; const inp = el.querySelector(`#sg input[data-l="${L}"]`); inp.value = dec[L]; inp.parentElement.classList.add("good"); hints++; if (hints > 4) R.hintUsed = true; prev(); $("#smsg").textContent = `Pistas usadas: ${hints}${hints > 4 ? " (con más de 4 pistas la XP baja a la mitad)" : ""}`; };
+    $("#sgo").onclick = () => { if (R.answered) return; const m = get(); let good = 0; letters.forEach(L => { const ok = m[L] === dec[L]; if (ok) good++; el.querySelector(`#sg label[data-l="${L}"]`).classList.toggle("good", ok); }); if (good === letters.length) done(true, `🔓 ¡Monoalfabético roto con ${hints} pista${hints === 1 ? "" : "s"}! Texto: <span class="mono">${esc(text)}</span>`); else $("#smsg").innerHTML = `${good}/${letters.length} letras correctas (marcadas en verde). Sigue intentando.`; };
+    $("#squit").onclick = () => { if (!R.answered) done(false, `Texto original: <span class="mono">${esc(text)}</span>`); };
+    q.answer = "el texto completo (ver arriba)";
+  },
+  grilleBuild(el, q, done) {
+    const n = 4, holes = new Set(); let rot = 0, showOrb = false;
+    el.appendChild(h(`<div><div class="board" id="gb" style="grid-template-columns:repeat(4,1fr)"></div><p class="center small" id="gi">Huecos: 0/4 · Rotación de vista: 0°</p>
+     <div class="actions" style="justify-content:center"><button id="grot">Girar vista ↺ 90°</button><button id="gorb">💡 Mostrar órbitas</button><button class="pri" id="gchk">Comprobar rejilla</button></div></div>`));
+    const draw = () => {
+      let cur = [...holes].map(k => [Math.floor(k / n), k % n]); for (let j = 0; j < rot; j++) cur = Crypto.rot(cur, n, 0);
+      const set = new Set(cur.map(([f, c]) => f * n + c));
+      $("#gb").innerHTML = Array.from({ length: n * n }, (_, k) => `<div class="cell ${set.has(k) ? "hole" : ""} ${showOrb ? "o" + Crypto.orbitOf(Math.floor(k / n), k % n, n) : ""}" data-k="${k}"></div>`).join("");
+      $("#gi").textContent = `Huecos: ${holes.size}/4 · Rotación de vista: ${rot * 90}° antihorario${rot ? " (vuelve a 0° para editar)" : ""}`;
+      el.querySelectorAll("#gb .cell").forEach(d => d.onclick = () => { if (R.answered || rot) return; const k = +d.dataset.k; if (holes.has(k)) holes.delete(k); else if (holes.size < 4) holes.add(k); else toast("Ya tienes 4 huecos: quita uno"); draw(); });
+    };
+    $("#grot").onclick = () => { rot = (rot + 1) % 4; draw(); };
+    $("#gorb").onclick = () => { showOrb = !showOrb; R.hintUsed = true; draw(); };
+    $("#gchk").onclick = () => { if (R.answered) return; if (holes.size !== 4) { toast("Abre exactamente 4 huecos"); return; } const hl = [...holes].map(k => [Math.floor(k / n), k % n]); const ok = Crypto.grilleValid(hl, n); const orbs = hl.map(([f, c]) => Crypto.orbitOf(f, c, n)); done(ok, ok ? `Tus huecos ${hl.map(([f, c]) => `(${f + 1},${c + 1})`).join(" ")} están cada uno en una órbita distinta: al girar cubren las 16 celdas. Hay 4⁴ = 256 rejillas 4×4 posibles.` : `Hay huecos que caen en la misma órbita (órbitas usadas: ${orbs.map(o => o + 1).join(", ")}): al girar se pisan. Debe haber exactamente uno por órbita.`); };
+    q.answer = "un hueco en cada una de las 4 órbitas";
+    draw();
+  },
+  grilleRun(el, q, done) {
+    const n = 4, steps = Crypto.grilleSteps(q.holes, n, q.dir), grid = Array(16).fill(""), dec = !!q.decrypt;
+    if (dec) for (let k = 0; k < 16; k++) grid[k] = q.msg[k];
+    let r = 0, j = 0, read = "";
+    const msg = dec ? "" : onlyLetters(q.msg).padEnd(16, "X");
+    el.appendChild(h(`<div><div class="board" id="gr" style="grid-template-columns:repeat(4,1fr)"></div><p class="center small" id="gs"></p>
+     <div class="actions" style="justify-content:center"><button id="gturn">Girar ${q.dir ? "↻ horario" : "↺ antihorario"}</button></div>
+     <label>${dec ? "Texto claro" : "Criptograma (leído por filas)"}:</label><input id="gans" autocomplete="off" autocapitalize="characters" spellcheck="false"><div class="actions"><button class="pri" id="ggo">Responder</button><button class="ghost" id="gskip">No sé</button></div></div>`));
+    const draw = () => {
+      const hs = new Set(r < 4 ? steps[r].map(([f, c]) => f * n + c) : []);
+      $("#gr").innerHTML = grid.map((ch, k) => `<div class="cell ${hs.has(k) ? "hole" : ""} ${ch && !dec ? "filled" : ""}" data-k="${k}">${ch}</div>`).join("");
+      $("#gs").innerHTML = r < 4 ? `Posición ${r + 1}/4 · ${dec ? `Leído: <b class="mono">${read || "—"}</b>` : `Siguiente letra: <b class="mono">${msg[r * 4 + j] || "—"}</b>`} · toca los huecos en orden de lectura` : (dec ? `Leído: <b class="mono">${read}</b>` : "✅ Rejilla completa: ahora lee el tablero por filas.");
+      $("#gturn").disabled = !(r < 4 && j === 4);
+      el.querySelectorAll("#gr .cell").forEach(d => d.onclick = () => {
+        if (R.answered || r >= 4 || j >= 4) return; const k = +d.dataset.k; const [f, c] = steps[r][j];
+        if (k !== f * n + c) { if (hs.has(k)) toast("Por filas: de arriba hacia abajo, de izquierda a derecha"); return; }
+        if (dec) read += grid[k]; else grid[k] = msg[r * 4 + j];
+        j++; if (j === 4 && r === 3) { r = 4; } draw();
+      });
+    };
+    $("#gturn").onclick = () => { if (j === 4 && r < 4) { r++; j = 0; draw(); } };
+    const go = () => { if (R.answered) return; const v = $("#gans").value; if (!norm(v)) { toast("Escribe tu respuesta"); return; } done(!!q.check(v), null); };
+    $("#ggo").onclick = go; $("#gans").onkeydown = e => { if (e.key === "Enter") go(); };
+    $("#gskip").onclick = () => { if (!R.answered) done(false, null); };
+    draw();
+  },
+  eea(el, q, done) {
+    const rows = Crypto.eeaRows(q.a, q.b), L = rows.length - 1;
+    el.appendChild(h(`<div><div class="tablewrap"><table class="eea"><tr><th>a</th><th>b</th><th>q = ⌊a/b⌋</th><th>x</th><th>y</th></tr>${rows.map((rw, i) => `<tr><td>${rw.a}</td><td>${rw.b}</td><td>${i === L ? "—" : `<input data-r="${i}" data-c="q" inputmode="numeric">`}</td><td>${i === L ? "1" : `<input data-r="${i}" data-c="x" inputmode="numeric">`}</td><td>${i === L ? "0" : `<input data-r="${i}" data-c="y" inputmode="numeric">`}</td></tr>`).join("")}</table></div>
+     <label>d = mcd(${q.a}, ${q.b}) =</label><input id="ed" inputmode="numeric" style="max-width:160px"><p class="small muted">La última fila es el caso base (b = 0 → (a, 1, 0)). Usa el signo menos cuando haga falta.</p><div class="actions"><button class="pri" id="ego">Comprobar tabla</button><button class="ghost" id="eskip">No sé</button></div></div>`));
+    const sol = `<div class="tablewrap"><table class="eea"><tr><th>a</th><th>b</th><th>q</th><th>d</th><th>x</th><th>y</th></tr>${rows.map(rw => `<tr><td>${rw.a}</td><td>${rw.b}</td><td>${rw.q == null ? "—" : rw.q}</td><td>${rw.d}</td><td>${rw.x}</td><td>${rw.y}</td></tr>`).join("")}</table></div><p>Comprobación: ${rows[0].x}·${q.a} + ${rows[0].y}·${q.b} = ${rows[0].d}${rows[0].d === 1 ? ` → ${q.b}⁻¹ mod ${q.a} = ${mod(rows[0].y, q.a)}` : ""}</p>`;
+    q.answer = "la tabla de abajo";
+    $("#ego").onclick = () => { if (R.answered) return; let ok = nums($("#ed").value)[0] === rows[0].d; el.querySelectorAll("table input").forEach(inp => { const v = nums(inp.value)[0]; const good = v === rows[+inp.dataset.r][inp.dataset.c]; inp.style.borderColor = good ? "#2ecc71" : "#ff4d5e"; ok = ok && good; }); done(ok, sol); };
+    $("#eskip").onclick = () => { if (!R.answered) done(false, sol); };
+  },
+};
+/* ======================= ESTADO Y PROGRESO ======================= */
+const KEY = "criptoQuestEdwin_v1";
+const DEF = () => ({ xp: 0, balls: {}, best: {}, wishes: [], seen8000: false, bestStreak: 0, answered: 0, correct: 0, bossWins: 0 });
+let S = (() => { try { const s = JSON.parse(localStorage.getItem(KEY)); return s ? Object.assign(DEF(), s) : DEF(); } catch (e) { return DEF(); } })();
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } };
+const FORMS = [[0, "Terrícola", "🧑"], [150, "Saiyajin", "🐒"], [400, "Super Saiyajin", "💛"], [800, "Super Saiyajin 2", "⚡"], [1300, "Super Saiyajin 3", "🦁"], [2000, "Super Saiyajin Dios", "🔴"], [3000, "Ultra Instinto", "🌌"]];
+const form = () => { let f = FORMS[0], nx = null; for (let i = 0; i < FORMS.length; i++) if (S.xp >= FORMS[i][0]) { f = FORMS[i]; nx = FORMS[i + 1] || null; } return { f, nx }; };
+const power = () => 5 + S.xp * 30;
+const $ = (sel, el = document) => el.querySelector(sel);
+const h = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+function toast(msg) { const old = document.querySelectorAll(".toast"); if (old.length >= 3) old[0].remove(); const n = Math.min(old.length, 2); const t = document.createElement("div"); t.className = "toast"; t.style.top = (70 + n * 58) + "px"; t.innerHTML = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 1900); }
+let gid = 0;
+function ballSVG(n, lit = true, size = 26) {
+  const P = { 1: [[.5, .5]], 2: [[.36, .5], [.64, .5]], 3: [[.5, .34], [.35, .6], [.65, .6]], 4: [[.36, .36], [.64, .36], [.36, .64], [.64, .64]], 5: [[.34, .34], [.66, .34], [.5, .5], [.34, .66], [.66, .66]], 6: [[.36, .3], [.64, .3], [.36, .5], [.64, .5], [.36, .7], [.64, .7]], 7: [[.5, .5], [.5, .26], [.5, .74], [.3, .38], [.7, .38], [.3, .62], [.7, .62]] }[n];
+  const id = "g" + (++gid), r = n > 4 ? 6.5 : 8;
+  const star = (cx, cy) => { let d = ""; for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r; d += (i ? "L" : "M") + (cx + rr * Math.cos(a)).toFixed(1) + " " + (cy + rr * Math.sin(a)).toFixed(1); } return `<path d="${d}Z" fill="${lit ? "#d4161b" : "#777"}"/>`; };
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" aria-label="Esfera de ${n} estrella${n > 1 ? "s" : ""}"><defs><radialGradient id="${id}" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="${lit ? "#fff3c4" : "#ccc"}"/><stop offset=".35" stop-color="${lit ? "#ffb347" : "#999"}"/><stop offset="1" stop-color="${lit ? "#e06a00" : "#555"}"/></radialGradient></defs><circle cx="50" cy="50" r="47" fill="url(#${id})" ${lit ? 'style="filter:drop-shadow(0 0 6px #ffae00)"' : ""}/>${P.map(([x, y]) => star(x * 100, y * 100)).join("")}<ellipse cx="34" cy="26" rx="14" ry="8" fill="#fff" opacity=".55"/></svg>`;
+}
+function motoSVG() { return `<svg viewBox="0 0 120 64" width="86"><circle cx="24" cy="48" r="12" fill="#111" stroke="#ddd" stroke-width="5"/><circle cx="96" cy="48" r="12" fill="#111" stroke="#ddd" stroke-width="5"/><path d="M24 48 L48 30 L80 30 L96 48" stroke="#999" stroke-width="4" fill="none"/><path d="M40 30 Q58 12 86 22 L90 32 L46 36 Z" fill="#ff6a00"/><path d="M86 22 L98 18" stroke="#ff6a00" stroke-width="4"/><circle cx="62" cy="10" r="8" fill="#1a1a1a" stroke="#ffd23f" stroke-width="2.5"/><path d="M57 9 h10" stroke="#38d6ff" stroke-width="3"/><path d="M60 17 L52 30 L66 30" stroke="#333" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M4 40 h12 M0 48 h14 M6 56 h10" stroke="#ffd23f" stroke-width="2" opacity=".7"/></svg>`; }
+
+function renderHUD() {
+  const { f, nx } = form(), pct = nx ? Math.min(100, 100 * (S.xp - f[0]) / (nx[0] - f[0])) : 100;
+  const balls = MISSIONS.map(m => ballSVG(m.ball, !!S.balls[m.id], 20)).join("");
+  $("#hud").innerHTML = `<div class="brand">🐉 Cripto<span>Quest</span></div>
+   <div class="stat" title="Transformación según tu XP">${f[2]} <b>${f[1]}</b></div>
+   <div class="stat"><span class="scouter">⌁ Nivel de pelea ${power().toLocaleString("es-CO")}</span></div>
+   <div class="stat" title="XP">XP <b>${S.xp}</b><div class="xpbar"><i style="width:${pct}%"></i></div>${nx ? `<span class="small">→ ${nx[1]}</span>` : ""}</div>
+   <div class="balls" title="Esferas del Dragón">${balls}</div>
+   <div class="stat"><button class="ghost small" id="b-home">🗺️ Mapa</button><button class="ghost small" id="b-fichas">📒 Fichas</button><button class="ghost small" id="b-reset">⟲ Reiniciar</button></div>`;
+  $("#b-home").onclick = () => { stopTimers(); renderMap(); };
+  $("#b-fichas").onclick = () => showFichas();
+  $("#b-reset").onclick = () => { if (confirm("¿Borrar todo el progreso (XP, esferas y deseos)?")) { S = DEF(); save(); stopTimers(); renderMap(); toast("Progreso reiniciado"); } };
+}
+function addXP(n) { S.xp += n; if (!S.seen8000 && power() > 8000) { S.seen8000 = true; setTimeout(() => toast("📟 Vegeta: «¡Su nivel de pelea es de más de 8000!»"), 600); } save(); renderHUD(); }
+function setTheme(t) { document.body.className = t ? "th-" + t : ""; }
+
+/* ======================= MAPA ======================= */
+function renderMap() {
+  setTheme(""); R = null; renderHUD();
+  const got = MISSIONS.filter(m => S.balls[m.id]).length, bossOpen = got === 7;
+  const app = $("#app"); app.innerHTML = "";
+  app.appendChild(h(`<section class="card"><h1 style="margin:.2em 0">Las 7 Esferas del Parcial 1 🐉</h1>
+   <p>Edwin: cada misión cubre temas del parcial de Criptografía (diapositivas Parte 1 y Parte 2) y te da una <b>Esfera del Dragón</b>. Con las 7 desbloqueas al <b>jefe final</b>, un simulacro cronometrado. Si lo vences, le pides tu deseo a Shenlong.</p>
+   <p class="small muted">Cómo se juega: ganas XP por cada acierto, con bono por racha. Tu nivel de pelea y tu transformación suben con la XP. Tienes 3 escudos estilo Halo por misión: cada error rompe uno y una racha de 5 aciertos te da Overshield. Pasas la misión con 70 % de aciertos y al menos un escudo. Los ejercicios de cálculo cambian en cada partida, y al final de cada misión hay una <b>ficha para tus apuntes</b>. Tu progreso queda guardado en este navegador.</p>
+   <p class="small">Esferas: <b>${got}/7</b> · Respuestas: ${S.answered} (${S.answered ? Math.round(100 * S.correct / S.answered) : 0}% correctas) · Mejor racha: ${S.bestStreak}${S.wishes.length ? ` · Deseos concedidos: ${S.wishes.length}` : ""}</p></section>`));
+  const grid = h(`<div class="grid"></div>`);
+  for (const m of MISSIONS) {
+    const c = h(`<div class="card mcard ${m.theme === "dn" ? "dn" : m.theme}" tabindex="0" role="button"><div class="done">${ballSVG(m.ball, !!S.balls[m.id], 40)}</div><div class="big">${m.icon}</div><h3>${m.title}</h3><div class="tag">${m.topics}</div><div class="tag">📄 ${m.pages}</div><div class="tag">${S.best[m.id] != null ? `Mejor: ${S.best[m.id]}%` : "Sin jugar"}${S.balls[m.id] ? " · ✅ Esfera ganada" : ""}</div></div>`);
+    c.onclick = () => startMission(m); c.onkeydown = e => { if (e.key === "Enter") startMission(m); };
+    grid.appendChild(c);
+  }
+  const b = h(`<div class="card mcard boss ${bossOpen ? "" : "locked"}" tabindex="0" role="button"><div class="done">${bossOpen ? "🔓" : "🔒"}</div><div class="big">${BOSS.icon}</div><h3>${BOSS.title}</h3><div class="tag">${BOSS.topics}</div><div class="tag">${bossOpen ? "14 preguntas · 15 min · 75 % para ganar" : `Reúne las 7 esferas (te faltan ${7 - got})`}</div>${S.best.boss != null ? `<div class="tag">Mejor: ${S.best.boss}%</div>` : ""}</div>`);
+  b.onclick = () => { if (bossOpen) startMission(BOSS); else toast("🔒 Necesitas las 7 Esferas del Dragón"); };
+  grid.appendChild(b);
+  app.appendChild(grid);
+  app.appendChild(h(`<p class="small muted center">Hecho para estudiar con el plan del 19 al 30 de octubre. Las páginas citadas son de las diapositivas del curso. «Complemento» marca lo que no sale con nombre en las diapositivas.</p>`));
+}
+
+/* ======================= MOTOR DE MISIÓN ======================= */
+let R = null, TICK = null;
+function stopTimers() { if (TICK) clearInterval(TICK); TICK = null; if (R && R.raceTimer) { clearInterval(R.raceTimer); R.raceTimer = null; } }
+const FLAVOR = {
+  dn: { ok: ["Ryuk: «Jejeje… ¡una manzana! 🍎»", "L se muerde el pulgar: «Interesante…»", "Light: «Todo según el plan»."], bad: ["L: «La probabilidad de que tú seas Kira subió un 5 %».", "Ryuk: «Los humanos son tan interesantes…»"], fail: "Kira te descubrió" },
+  moto: { ok: ["¡Vroom! 🏍️💨 Cambio a la siguiente marcha.", "Curva perfecta, rodilla al piso."], bad: ["Se te fue la moto en la chicana.", "Penalización de 5 s en boxes."], fail: "Moto en la grava" },
+  apex: { ok: ["¡Loot dorado! 🎁", "Bloodhound: «Rastro encontrado»."], bad: ["Te alcanzó la tormenta del anillo.", "¡Escudo roto! Busca celdas."], fail: "Escuadrón eliminado" },
+  halo: { ok: ["Cortana: «Buen trabajo, Jefe».", "Transmisión Covenant descifrada."], bad: ["Escudos agotándose… ¡cúbrete!", "Cortana: «Jefe, revisa el mod 26»."], fail: "Spartan caído" },
+  dbz: { ok: ["¡Kamehameha! 💥", "Vegeta: «Hmph… nada mal, Kakaroto»."], bad: ["Goku: «¡Otra vez! Así se entrena».", "Piccolo: «Concéntrate»."], fail: "Te quedaste sin energía" },
+  boss: { ok: ["¡Golpe crítico a Cell!", "Cell: «¿Eso es todo?»… pero perdió energía."], bad: ["Cell absorbió esa respuesta.", "Cell se regenera…"], fail: "Cell ganó esta ronda" },
+};
+function startMission(m) {
+  stopTimers();
+  R = { m, qs: m.build(), i: 0, ok: 0, shields: 3, max: 3, streak: 0, xp: 0, loot: m.theme === "apex" ? 1 : 0, deadline: null };
+  setTheme(m.theme); renderHUD();
+  const app = $("#app"); app.innerHTML = "";
+  const c = h(`<section class="card"><div class="big" style="font-size:3rem">${m.icon}</div><h2>${m.title}</h2><p class="muted">${m.topics}${m.pages ? " · 📄 " + m.pages : ""}</p><div class="story">${m.intro}</div><p class="small muted">${R.qs.length} retos · 3 escudos 🛡️${m.timer ? " · ⏱️ anillo en cada pregunta" : ""}${m.timerTotal ? " · ⏱️ 15 minutos en total" : ""}</p><div class="actions"><button class="pri" id="go">¡A jugar!</button>${m.ficha ? '<button id="fi">📒 Ver la ficha primero</button>' : ""}<button class="ghost" id="back">Volver</button></div></section>`);
+  app.appendChild(c);
+  $("#go").onclick = () => { if (m.timerTotal) R.deadline = Date.now() + m.timerTotal * 1000; renderQ(); };
+  if (m.ficha) $("#fi").onclick = () => showFicha(m);
+  $("#back").onclick = renderMap;
+}
+function shieldsHTML() { let s = ""; for (let i = 0; i < Math.max(R.max, R.shields); i++) s += `<i class="${i < R.shields ? (i >= R.max ? "over" : "") : "off"}"></i>`; return `<span class="shields" title="Escudos">🛡️${s}</span>`; }
+function ringHTML() { return `<span class="ring" id="ring"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="#ffffff22" stroke-width="5"/><circle id="ringc" cx="20" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="5" stroke-dasharray="100.5" stroke-dashoffset="0" transform="rotate(-90 20 20)"/></svg><span id="ringt"></span></span>`; }
+function renderQ() {
+  stopTimers();
+  const q = R.qs[R.i], m = R.m; R.answered = false; R.hintUsed = false;
+  const app = $("#app"); app.innerHTML = "";
+  const extra = m.theme === "apex" ? `<span class="lootbar">🎁 Loot: <b>${R.loot}</b></span>` : m.theme === "dn" ? `<span>🍎 ${Math.floor(R.xp / 10)}</span>` : "";
+  const top = h(`<div class="card qhead" style="padding:10px 14px"><span><b>${m.icon} ${R.i + 1}/${R.qs.length}</b></span>${shieldsHTML()}<span>🔥 Racha ${R.streak}</span>${extra}<span>✅ ${R.ok}</span>${m.timer || m.timerTotal ? ringHTML() : ""}</div>`);
+  app.appendChild(top);
+  const card = h(`<section class="card" id="qcard"><div class="prompt">${q.prompt}</div><div id="qbody"></div><div id="fb"></div></section>`);
+  app.appendChild(card);
+  const body = $("#qbody", card);
+  if (q.type === "mc") {
+    const order = shuffle(q.options.map((o, i) => i));
+    const box = h(`<div class="opts"></div>`);
+    order.forEach(i => { const b = h(`<button>${q.options[i]}</button>`); b.onclick = () => { if (R.answered) return; const ok = i === q.correct; b.classList.add(ok ? "sel-ok" : "sel-bad"); [...box.children].forEach((bb, j) => { if (order[j] === q.correct) bb.classList.add("show-ok"); bb.disabled = true; }); answer(ok, q); }; box.appendChild(b); });
+    body.appendChild(box);
+  } else if (q.type === "input") {
+    const f = h(`<div><input id="ans" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Escribe tu respuesta (no importan mayúsculas ni espacios)"><div class="actions"><button class="pri" id="send">Responder</button>${q.hint ? '<button id="hint">💡 Pista</button>' : ""}<button class="ghost" id="skip">No sé</button></div><div id="hintbox" class="small muted"></div></div>`);
+    body.appendChild(f);
+    const go = () => { if (R.answered) return; const v = $("#ans").value; if (!norm(v) && !/\d/.test(v)) { toast("Escribe algo primero"); return; } answer(!!q.check(v), q, v); };
+    $("#send").onclick = go; $("#ans").onkeydown = e => { if (e.key === "Enter") go(); };
+    $("#skip").onclick = () => { if (!R.answered) answer(false, q, ""); };
+    if (q.hint) $("#hint").onclick = () => useHint(q);
+    setTimeout(() => { const a = $("#ans"); if (a && window.innerWidth > 700) a.focus(); }, 50);
+  } else if (q.type === "steps") {
+    const f = h(`<div class="steps"></div>`);
+    q.steps.forEach((s, i) => f.appendChild(h(`<div><label for="st${i}">${s.label}</label><input id="st${i}" autocomplete="off" autocapitalize="characters" spellcheck="false"><span id="sm${i}" class="small"></span></div>`)));
+    f.appendChild(h(`<div class="actions"><button class="pri" id="send">Comprobar todo</button><button class="ghost" id="skip">No sé</button></div>`));
+    body.appendChild(f);
+    $("#send").onclick = () => { if (R.answered) return; let all = true; q.steps.forEach((s, i) => { const ok = !!s.check($("#st" + i).value); all = all && ok; $("#sm" + i).innerHTML = ok ? ' <span class="ok-t">✔</span>' : ` <span class="bad-t">✘ → ${esc(s.solution)}</span>`; }); answer(all, q); };
+    $("#skip").onclick = () => { if (!R.answered) { q.steps.forEach((s, i) => $("#sm" + i).innerHTML = ` <span class="bad-t">→ ${esc(s.solution)}</span>`); answer(false, q); } };
+  } else if (q.type === "widget") {
+    WIDGETS[q.widget](body, q, (ok, html) => answer(ok, q, null, html));
+  }
+  startQTimer(q);
+}
+function useHint(q) {
+  if (R.answered || R.hintUsed) return;
+  if (R.m.theme === "apex") { if (R.loot < 1) { toast("🎁 Sin loot: acierta para conseguir más"); return; } R.loot--; }
+  R.hintUsed = true; $("#hintbox").innerHTML = "💡 " + q.hint + (R.m.theme === "apex" ? " (gastaste 1 loot)" : " (esta pregunta da la mitad de XP)");
+}
+function startQTimer(q) {
+  const m = R.m; let total, end;
+  if (m.timerTotal) { total = m.timerTotal; end = R.deadline; }
+  else if (m.timer) { total = q.type === "mc" ? m.timer.mc : q.type === "steps" ? m.timer.steps : q.type === "widget" ? m.timer.widget : m.timer.input; end = Date.now() + total * 1000; }
+  else return;
+  const upd = () => {
+    const left = Math.max(0, end - Date.now()), s = Math.ceil(left / 1000), rc = $("#ringc"), rt = $("#ringt"), rg = $("#ring");
+    if (rc) rc.setAttribute("stroke-dashoffset", (100.5 * (1 - left / (total * 1000))).toFixed(1));
+    if (rt) rt.textContent = (m.timerTotal ? "⏱️ " : "💍 Anillo: ") + Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+    if (rg) rg.classList.toggle("danger", left < 10000);
+    if (left <= 0) { stopTimers(); if (m.timerTotal) { if (!R.answered) answer(false, q, "", "<b>⏱️ ¡Se acabó el tiempo del simulacro!</b>"); R.timeUp = true; } else if (!R.answered) answer(false, q, "", "<b>💍 ¡El anillo se cerró!</b> Se te acabó el tiempo."); }
+  };
+  upd(); TICK = setInterval(upd, 250);
+}
+function answer(ok, q, val, extraHTML) {
+  if (R.answered) return; R.answered = true;
+  if (!R.m.timerTotal) stopTimers();
+  if (R.raceTimer) { clearInterval(R.raceTimer); R.raceTimer = null; }
+  const fl = FLAVOR[R.m.theme] || FLAVOR.dbz;
+  S.answered++;
+  let gained = 0;
+  if (ok) {
+    R.ok++; R.streak++; S.correct++; S.bestStreak = Math.max(S.bestStreak, R.streak);
+    const base = q.type === "mc" ? 10 : (q.type === "input" ? 15 : 25);
+    gained = base + Math.min(R.streak, 5) * 2; if (R.hintUsed) gained = Math.floor(gained / 2);
+    R.xp += gained; addXP(gained);
+    if (R.m.theme === "apex") R.loot++;
+    const med = { 2: "¡Doble baja!", 3: "¡Triple baja!", 4: "¡Overkill!", 5: "¡Killtacular!", 7: "¡Killing Spree!", 10: "¡Imparable!" }[R.streak];
+    if (R.streak % 5 === 0 && R.shields < R.max + 1) { R.shields++; toast((med || `¡Racha x${R.streak}!`) + "<br>🛡️ Overshield +1"); }
+    else if (med) toast(`🏅 ${med}`);
+  } else {
+    R.streak = 0; R.shields--; save();
+    const qc = $("#qcard"); if (qc) { qc.classList.remove("shake"); void qc.offsetWidth; qc.classList.add("shake"); }
+  }
+  save();
+  const fb = $("#fb");
+  const last = R.i >= R.qs.length - 1 || R.shields <= 0 || R.timeUp || (R.m.timerTotal && Date.now() >= R.deadline);
+  const ansShown = q.type === "mc" ? q.options[q.correct] : q.type === "steps" ? q.steps.map(s => esc(s.solution)).join(" · ") : (q.answer != null ? esc(q.answer) : "");
+  fb.innerHTML = `<div class="fb ${ok ? "ok" : "bad"}">${extraHTML ? `<div>${extraHTML}</div>` : ""}<div><b>${ok ? "✅ ¡Correcto!" : "❌ Incorrecto"}</b> ${ok ? `+${gained} XP` : `(−1 escudo: quedan ${Math.max(0, R.shields)})`} · <i>${pick(ok ? fl.ok : fl.bad)}</i></div>${!ok && ansShown ? `<div style="margin-top:6px">Respuesta correcta: <b>${ansShown}</b></div>` : ""}<div style="margin-top:6px">${q.explain || ""}</div>${q.page ? `<div class="page">📄 ${q.page}</div>` : ""}</div><div class="actions"><button class="pri" id="next">${last ? "Ver resultado" : "Siguiente ➜"}</button></div>`;
+  document.querySelectorAll("#qbody input, #qbody button").forEach(e => { e.disabled = true; });
+  $("#next").onclick = () => { if (last || (R.m.timerTotal && Date.now() >= R.deadline)) endMission(); else { R.i++; renderQ(); } };
+  $("#next").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+function endMission() {
+  stopTimers();
+  const m = R.m, total = R.qs.length, pct = Math.round(100 * R.ok / total), need = m.id === "boss" ? 75 : 70;
+  const pass = R.shields > 0 && pct >= need;
+  S.best[m.id] = Math.max(S.best[m.id] || 0, pct);
+  const firstBall = pass && m.ball && !S.balls[m.id];
+  if (pass && m.ball) S.balls[m.id] = true;
+  if (pass && m.id === "boss") S.bossWins++;
+  save(); renderHUD();
+  const fl = FLAVOR[m.theme] || FLAVOR.dbz;
+  const app = $("#app"); app.innerHTML = "";
+  const c = h(`<section class="card center"><h2>${pass ? "🏆 ¡Misión superada!" : "💀 " + fl.fail}</h2>
+   ${m.ball ? `<div class="${firstBall ? "end-ball" : ""}" style="display:inline-block">${ballSVG(m.ball, pass || !!S.balls[m.id], 120)}</div>` : `<div style="font-size:4rem">${pass ? "🐉" : "🦗"}</div>`}
+   <p>${pass ? (firstBall ? `¡Conseguiste la <b>esfera de ${m.ball} estrella${m.ball > 1 ? "s" : ""}</b>!` : (m.ball ? "Ya tenías esta esfera. ¡Buen repaso!" : "¡Venciste a Cell!")) : `Necesitas al menos ${need} % de aciertos y algún escudo en pie. Los ejercicios cambian cada vez: ¡inténtalo de nuevo!`}</p>
+   <p>Aciertos: <b>${R.ok}/${total}</b> (${pct} %) · XP ganada: <b>${R.xp}</b> · Escudos: ${Math.max(0, R.shields)}</p>
+   <div class="actions" style="justify-content:center">${m.ficha ? '<button class="pri" id="fi">📒 Ficha para apuntes</button>' : ""}${pass && m.id === "boss" ? '<button class="pri" id="wish">🐉 Pedir el deseo</button>' : ""}<button id="again">🔁 Repetir con ejercicios nuevos</button><button class="ghost" id="map">🗺️ Mapa</button></div></section>`);
+  app.appendChild(c);
+  if (m.ficha) $("#fi").onclick = () => showFicha(m);
+  if ($("#wish")) $("#wish").onclick = renderWish;
+  $("#again").onclick = () => startMission(m);
+  $("#map").onclick = renderMap;
+  if (MISSIONS.every(x => S.balls[x.id]) && firstBall) setTimeout(() => toast("✨ ¡Tienes las 7 esferas! El jefe final está desbloqueado"), 900);
+  if (m.ficha && pass) setTimeout(() => showFicha(m), firstBall ? 1600 : 400);
+}
+function renderWish() {
+  setTheme("boss"); const app = $("#app"); app.innerHTML = "";
+  const c = h(`<section class="card center"><div class="shenlong">🐉</div><h2>«Has reunido las siete Esferas del Dragón. Di tu deseo…»</h2>
+   <p class="muted">Escribe tu deseo (por ejemplo, la nota que quieres sacar en el parcial).</p><input id="wtext" maxlength="140" placeholder="Shenlong, deseo…"><div class="actions" style="justify-content:center"><button class="pri" id="grant">✨ Concédeme el deseo</button></div><div id="wres"></div></section>`);
+  app.appendChild(c);
+  $("#grant").onclick = () => {
+    const t = $("#wtext").value.trim() || "aprobar el parcial de Criptografía"; S.wishes.push({ t, d: new Date().toISOString() }); save();
+    const r = $("#wres"); r.innerHTML = ""; const p = document.createElement("p"); p.style.fontSize = "1.15rem"; p.textContent = `🐉 «Tu deseo ha sido concedido: ${t}». (El resto depende de que repases las fichas 😉)`; r.appendChild(p);
+    const b = h(`<div class="actions" style="justify-content:center"><button id="scatter">💫 Las esferas se dispersan: jugar otra vuelta</button><button class="ghost" id="map2">🗺️ Mapa</button></div>`); r.appendChild(b);
+    $("#scatter").onclick = () => { S.balls = {}; save(); toast("Las esferas se dispersaron por el planeta… ¡a buscarlas otra vez!"); renderMap(); };
+    $("#map2").onclick = renderMap; $("#grant").disabled = true;
+  };
+}
+/* ======================= FICHAS ======================= */
+function htmlToText(html) { const d = document.createElement("div"); d.innerHTML = html.replace(/<a href="([^"]+)"[^>]*>(.*?)<\/a>/g, "$2 ($1)").replace(/<li>/g, "\n• ").replace(/<h3>/g, "\n\n## ").replace(/<\/h3>/g, "\n"); return d.textContent.replace(/\n{3,}/g, "\n\n").trim(); }
+function modal(inner) { const root = $("#modal-root"); root.innerHTML = ""; const mm = h(`<div class="modal"><div class="card ficha">${inner}<div class="actions"><button class="pri" id="copy">📋 Copiar texto</button><button id="print">🖨️ Imprimir</button><button class="ghost" id="close" style="color:#333;border-color:#333">Cerrar</button></div></div></div>`); root.appendChild(mm);
+  $("#close").onclick = () => root.innerHTML = ""; mm.onclick = e => { if (e.target === mm) root.innerHTML = ""; };
+  $("#print").onclick = () => window.print();
+  $("#copy").onclick = () => { const txt = htmlToText(inner); const fallback = () => { const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); toast("Copiado ✅"); } catch (e) { toast("No se pudo copiar"); } ta.remove(); }; if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(() => toast("Copiado ✅"), fallback); else fallback(); };
+}
+const VIDEOS = {
+  m1: [["Píldora 2: ¿Qué es la criptografía? (UPM)", "https://www.youtube.com/watch?v=PDpMgx7avzA"], ["Píldora 1: ¿Seguridad Informática o de la Información? (UPM)", "https://www.youtube.com/watch?v=7MqTpfEreJ0"]],
+  m2: [["Class4crypt c4c4.4 Secreto perfecto", "https://www.youtube.com/watch?v=4JXy85IV_3k"], ["One Time Pad (Neso Academy)", "https://www.youtube.com/watch?v=6iYqHn3q8sY"], ["CyberChef (XOR)", "https://gchq.github.io/CyberChef/"]],
+  m3: [["Píldora 16: cifra del César (UPM)", "https://www.youtube.com/watch?v=4vn6SIItjy0"], ["Píldora 18: ataque a la sustitución monoalfabética (UPM)", "https://www.youtube.com/watch?v=Jsg4QNvhOYQ"], ["dCode: análisis de frecuencias", "https://www.dcode.fr/frequency-analysis"]],
+  m4: [["Videoclase: Cifrado PlayFair (Udearroba)", "https://www.youtube.com/watch?v=cj9emeatPNA"], ["Playfair en un minuto", "https://www.youtube.com/watch?v=9O3poI53p7k"], ["dCode: Playfair", "https://www.dcode.fr/playfair-cipher"]],
+  m5: [["Píldora 19: Vigenère (UPM)", "https://www.youtube.com/watch?v=8Pb5U64iwV4"], ["Píldora 20: ataque de Kasiski (UPM)", "https://www.youtube.com/watch?v=A7p2ydEPg1k"], ["dCode: índice de coincidencia", "https://www.dcode.fr/index-coincidence"]],
+  m6: [["Píldora 21: cifra de Hill (UPM)", "https://www.youtube.com/watch?v=3X29bcufrOM"], ["Píldora 25: inversos con el EEA (UPM)", "https://www.youtube.com/watch?v=D289EF58Yrw"], ["Hill 3×3 paso a paso, parte 1", "https://www.youtube.com/watch?v=ndcaOIDYYvA"]],
+  m7: [["Cifrado homofónico (Arthur Code)", "https://www.youtube.com/watch?v=mqxxeCo47_o"], ["Píldora 15: transposición (UPM)", "https://www.youtube.com/watch?v=huIiPnr61sM"], ["Rotating Grille (The Black Chamber)", "https://www.youtube.com/watch?v=K8AqGksf_Ic"], ["Píldora 9: confusión y difusión (UPM)", "https://www.youtube.com/watch?v=KKDjQo56hHA"], ["Straddling Checkerboard explicado", "https://www.youtube.com/watch?v=q8CByEr2VwE"]],
+};
+const vidHTML = m => VIDEOS[m.id] ? `<p class="small"><b>🎬 Para repasar (del plan de estudio):</b> ${VIDEOS[m.id].map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join(" · ")}</p>` : "";
+function showFicha(m) { modal(`<h2>📒 Ficha para apuntes · ${m.icon} ${m.title}</h2><p class="small">Pásala a tu cuaderno a mano: escribirla te ayuda a recordarla. Las páginas son de las diapositivas.</p>${m.ficha}${vidHTML(m)}`); }
+function showFichas() { modal(`<h2>📒 Todas las fichas para apuntes</h2>${MISSIONS.map(m => m.ficha + vidHTML(m)).join("")}`); }
+/* ======================= INICIO ======================= */
+window.CQ = { Crypto, G, MISSIONS, BOSS, WIDGETS, norm, chkText, chkNums, get S() { return S; }, get R() { return R; }, startMission, renderMap, endMission };
+renderMap();
+</script>
+</body>
+</html>
